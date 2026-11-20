@@ -7,6 +7,7 @@ import { StyledTab, StyledTabs } from '../../../../shared/components/Tabs/Styled
 import { SpecificEstimator } from '../../../../types/RequestTypes';
 import { EstimatorPagesByDimensions } from '../../../../types/ResponseTypes';
 import { FullSimulationData } from '../../../../types/SimulationService';
+import { eagerGroups, pageGroups } from '../../../../util/lazyPages';
 
 interface EstimatorsTabProps {
 	tabsValue: number;
@@ -38,68 +39,75 @@ const EstimatorsSelect = ({
 			const estimatorExists =
 				currentEstimatorData[id] && currentEstimatorData[id].name !== '';
 
-			if (estimatorsPagesData) {
-				const estimatorsPagesByDimensions = estimatorsPagesData[id].pagesByDimensions;
+			if (!estimatorsPagesData || estimatorExists) return;
 
-				if (!estimatorExists) {
-					const simulationJobId = simulation.jobId;
-					const allResults: SpecificEstimator[] = [];
+			const simulationJobId = simulation.jobId;
+			const estimatorName = estimatorsTabData[id];
+			const estimatorPages =
+				estimatorsPagesData.find(estimator => estimator.name === estimatorName) ??
+				estimatorsPagesData[id];
+			const allResults: SpecificEstimator[] = [];
+			// only the values and lines: maps and volumes load when they come into view (EstimatorTab)
+			const eager = eagerGroups(pageGroups(estimatorPages?.pagesByDimensions));
 
-					for (const [, pageDimension] of Object.entries(estimatorsPagesByDimensions)) {
-						const estimatorData = await getEstimatorsPages(
-							{
-								jobId: simulationJobId,
-								estimatorName: estimatorsTabData[id],
-								pageNumbers: pageDimension.pageNums
-							},
-							controller.signal,
-							true
-						);
+			for (const pageDimension of eager) {
+				const estimatorData = await getEstimatorsPages(
+					{
+						jobId: simulationJobId,
+						estimatorName,
+						pageNumbers: pageDimension.pageNums
+					},
+					controller.signal,
+					true
+				);
 
-						if (estimatorData) {
-							allResults.push(estimatorData);
-						}
-					}
-
-					if (allResults.length === 0) return;
-
-					const aggregationResults = allResults.reduce(
-						(acc, result) => {
-							result.estimators.forEach(estimator => {
-								const existingEstimator = acc.estimators.find(
-									e => e.name === estimator.name
-								);
-
-								if (existingEstimator) {
-									existingEstimator.pages.push(...estimator.pages);
-								} else {
-									acc.estimators.push(estimator);
-								}
-							});
-
-							return acc;
-						},
-						{ jobId: simulationJobId, estimators: [], message: '' } as SpecificEstimator
-					);
-
-					const newEstimators = [...currentEstimatorData];
-
-					while (newEstimators.length <= id) {
-						newEstimators.push({
-							name: '',
-							pages: []
-						});
-					}
-
-					newEstimators[id] = aggregationResults.estimators[0];
-
-					const newSimulation = {
-						...simulation,
-						estimators: newEstimators
-					};
-					setResultsSimulationData({ source: 'onSelect', data: newSimulation });
+				if (estimatorData) {
+					allResults.push(estimatorData);
 				}
 			}
+
+			// nothing came back: the tab stays empty, so selecting it again tries again
+			if (eager.length > 0 && allResults.length === 0) return;
+
+			const aggregationResults = allResults.reduce(
+				(acc, result) => {
+					result.estimators.forEach(estimator => {
+						const existingEstimator = acc.estimators.find(
+							e => e.name === estimator.name
+						);
+
+						if (existingEstimator) {
+							existingEstimator.pages.push(...estimator.pages);
+						} else {
+							acc.estimators.push({ ...estimator, pages: [...estimator.pages] });
+						}
+					});
+
+					return acc;
+				},
+				{ jobId: simulationJobId, estimators: [], message: '' } as SpecificEstimator
+			);
+
+			const newEstimators = [...currentEstimatorData];
+
+			while (newEstimators.length <= id) {
+				newEstimators.push({
+					name: '',
+					pages: []
+				});
+			}
+
+			// an estimator of maps only has none of its pages yet: they come when shown
+			newEstimators[id] = aggregationResults.estimators[0] ?? {
+				name: estimatorName,
+				pages: []
+			};
+
+			const newSimulation = {
+				...simulation,
+				estimators: newEstimators
+			};
+			setResultsSimulationData({ source: 'onSelect', data: newSimulation });
 		},
 		[
 			controller.signal,

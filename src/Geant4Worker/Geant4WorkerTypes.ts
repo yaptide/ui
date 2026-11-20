@@ -26,12 +26,7 @@ export type Geant4WorkerDatasetProgress = {
 export type Geant4WorkerMessageDatasetProgress = Record<string, Geant4WorkerDatasetProgress>;
 
 export type Geant4WorkerMessagePayload =
-	| Geant4WorkerMessageFile
-	| Geant4WorkerMessageDatasetProgress
-	| string
-	| number
-	| Error
-	| void;
+	Geant4WorkerMessageFile | Geant4WorkerMessageDatasetProgress | string | number | Error | void;
 
 export type Geant4WorkerMessage = {
 	type: Geant4WorkerMessageType;

@@ -9,9 +9,16 @@ import { isScoringQuantity } from '../../Simulation/Scoring/ScoringQuantity';
 import { YaptideEditor } from '../YaptideEditor';
 
 export const canBeDuplicated = (object: object) => {
-	return 'duplicate' in object && 'notDuplicatable' in object
-		? object.notDuplicatable !== true
-		: true;
+	if ('notDuplicatable' in object && object.notDuplicatable === true) return false;
+
+	return (
+		isBasicFigure(object) ||
+		(isScoringQuantity(object) && object.getParentOutput() !== undefined) ||
+		isSimulationZone(object) ||
+		isDetector(object) ||
+		isOutput(object) ||
+		isScoringFilter(object)
+	);
 };
 
 export const getDuplicateCommand = (editor: YaptideEditor, object: SimulationElement) => {
@@ -21,11 +28,10 @@ export const getDuplicateCommand = (editor: YaptideEditor, object: SimulationEle
 
 	if (isBasicFigure(clone)) {
 		return commandFactory.createDuplicateCommand('figure', clone, editor.figureManager);
-	} else if (isScoringQuantity(clone) && object.parent) {
-		const output = object.parent.parent;
+	} else if (isScoringQuantity(clone) && isScoringQuantity(object)) {
+		const output = object.getParentOutput();
 
-		if (isOutput(output))
-			return commandFactory.createDuplicateCommand('quantity', clone, output);
+		if (output) return commandFactory.createDuplicateCommand('quantity', clone, output);
 	} else if (isSimulationZone(clone)) {
 		return commandFactory.createDuplicateCommand('zone', clone, editor.zoneManager);
 	} else if (isDetector(clone)) {

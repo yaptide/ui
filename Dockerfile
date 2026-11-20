@@ -6,6 +6,8 @@
 # The second stage is used to serve the app using nginx. It copies the build folder from the first stage
 # and weighs only ~ 80 MB.
 
+ARG NODE_VERSION=24
+
 # Stage 1: Generate SSL certificate
 FROM alpine AS cert-gen
 
@@ -27,7 +29,7 @@ RUN pip install --no-cache-dir "poetry ~= 2.1.3" \
     && poetry build --format wheel --no-ansi
 
 # Stage 3: Build the application.
-FROM node:24 AS build
+FROM node:${NODE_VERSION} AS build
 
 # Directory where the app is installed and run.
 WORKDIR /usr/src/app

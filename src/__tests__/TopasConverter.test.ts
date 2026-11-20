@@ -64,7 +64,9 @@ describe('TopasConverter', () => {
 
 		const openProjectWidget = await driver.wait(
 			until.elementLocated(
-				By.xpath(`//div[@role = 'dialog' and @aria-labelledby = '${openProjectTitleId}']`)
+				By.xpath(
+					`//div[(@role = 'dialog' or @role = 'alertdialog') and @aria-labelledby = '${openProjectTitleId}']`
+				)
 			),
 			10_000
 		);
@@ -105,7 +107,7 @@ describe('TopasConverter', () => {
 		//check if the first example is "Proton pencil beam in water"
 		//text is located in element with id corresponding to aria-labelledby of the list element
 		const exampleLabel = await openProjectWidget.findElement(
-			By.id(await firstExample.getAttribute('aria-labelledby'))
+			By.id((await firstExample.getAttribute('aria-labelledby')) ?? '')
 		);
 		expect(await exampleLabel.getText()).toBe('Proton pencil beam in water');
 
@@ -128,7 +130,7 @@ describe('TopasConverter', () => {
 		const loadFileDialog = await driver.wait(
 			until.elementLocated(
 				By.xpath(
-					`//div[@role = 'dialog' and @aria-labelledby = '${loadFileTitleId}' and @aria-describedby = '${loadFileContentId}']`
+					`//div[(@role = 'dialog' or @role = 'alertdialog') and @aria-labelledby = '${loadFileTitleId}' and @aria-describedby = '${loadFileContentId}']`
 				)
 			),
 			10_000

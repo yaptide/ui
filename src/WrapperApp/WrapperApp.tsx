@@ -204,12 +204,14 @@ function WrapperApp() {
 						open={mobileNavOpen}
 						onClose={() => setMobileNavOpen(false)}
 						ModalProps={{ keepMounted: true }}
-						PaperProps={{
-							elevation: 1,
-							sx: {
-								borderStyle: 'solid',
-								borderWidth: 1,
-								borderColor: 'divider'
+						slotProps={{
+							paper: {
+								elevation: 1,
+								sx: {
+									borderStyle: 'solid',
+									borderWidth: 1,
+									borderColor: 'divider'
+								}
 							}
 						}}>
 						<Box sx={{ width: MOBILE_NAV_DRAWER_WIDTH, height: '100%' }}>

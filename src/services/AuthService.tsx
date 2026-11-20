@@ -10,6 +10,7 @@ import {
 	ResponseAuthLogin,
 	ResponseAuthRefresh,
 	ResponseAuthStatus,
+	ResponseRoot,
 	YaptideResponse
 } from '../types/ResponseTypes';
 import { hasFields } from '../util/customGuards';
@@ -66,6 +67,7 @@ export interface AuthContext {
 	user: AuthUser | null;
 	isAuthorized: boolean;
 	isServerReachable: boolean;
+	localUsersEnabled: boolean;
 	login: (...args: RequestAuthLogin) => void;
 	logout: (...args: RequestAuthLogout) => void;
 	refresh: (...args: RequestAuthRefresh) => void;
@@ -83,6 +85,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 	const { keycloak, initialized } = useKeycloakAuth();
 	const [keyCloakInterval, setKeyCloakInterval] = useState<number>();
 	const [isServerReachable, setIsServerReachable] = useState<boolean | null>(null);
+	const [localUsersEnabled, setLocalUsersEnabled] = useState(true);
 	const { enqueueSnackbar } = useSnackbar();
 	const { open: openRejectKeycloakUserDialog } = useDialog('rejectKeycloak');
 	const { open: openRejectKeycloakRefreshUserDialog } = useDialog('rejectKeycloakRefresh');
@@ -97,9 +100,9 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 		() =>
 			ky.create({
 				credentials: 'include',
-				prefixUrl: backendUrl,
-				//overwrite default json parser to convert snake_case to camelCase
-				parseJson: (text: string) => {
+				prefix: backendUrl,
+				parseJson: (text: string, { response }) => {
+					if (text === '' && response.ok) return text;
 					const json = JSON.parse(text);
 
 					if (typeof json === 'object' && json) return snakeToCamelCase(json, true);
@@ -109,22 +112,34 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 				},
 				hooks: {
 					afterResponse: [
-						async (_request, _options, response) => {
-							if (response?.status in [401, 403]) setUser(null);
-							if (response?.status === 403)
-								enqueueSnackbar('Please log in again.', { variant: 'warning' });
+						async ({ request, options, response, retryCount }) => {
+							try {
+								if (response?.status in [401, 403]) setUser(null);
+								if (response?.status === 403)
+									enqueueSnackbar('Please log in again.', { variant: 'warning' });
 
-							if (response?.status > 300) {
-								const message = await response
-									.json()
-									.then(parseYaptideResponseMessage);
+								if (response?.status > 300) {
+									const message = await response
+										.json()
+										.then(parseYaptideResponseMessage);
 
-								if (!ignored_messages.includes(message))
-									enqueueSnackbar(message, {
-										variant: 'error'
-									});
+									if (!ignored_messages.includes(message))
+										enqueueSnackbar(message, {
+											variant: 'error'
+										});
 
-								return Promise.reject(response);
+									return await Promise.reject(response);
+								}
+							} catch (error) {
+								const { limit, methods } = options.retry;
+
+								if (
+									retryCount < limit &&
+									methods.some(method => method.toUpperCase() === request.method)
+								)
+									return ky.retry();
+
+								throw error;
 							}
 						}
 					]
@@ -150,8 +165,12 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 
 		return kyIntervalRef
 			.get(``)
-			.json<YaptideResponse>()
-			.then(r => !!r.message)
+			.json<ResponseRoot>()
+			.then(r => {
+				setLocalUsersEnabled(r.localUsersEnabled ?? true);
+
+				return !!r.message;
+			})
 			.then(status =>
 				setIsServerReachable(prev => {
 					if (prev !== null && status !== prev)
@@ -360,6 +379,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 				user,
 				isAuthorized,
 				isServerReachable: Boolean(isServerReachable),
+				localUsersEnabled,
 				login,
 				logout,
 				authKy,
