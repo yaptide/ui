@@ -129,6 +129,11 @@ export class ScoringQuantity
 	}
 
 	fromSerialized(json: ScoringQuantityJSON): this {
+		if ('primaries' in json)
+			console.warn(
+				`Quantity "${json.name}": the "primaries" option is no longer supported and was ignored.`
+			);
+
 		super.fromSerialized(json);
 		this._configurator.fromSerialized(json);
 

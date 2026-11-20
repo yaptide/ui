@@ -6,6 +6,7 @@ import { CounterMap } from '../../../util/CounterMap/CounterMap';
 import { SerializableState } from '../../js/EditorJson';
 import { JSON_VERSION, YaptideEditor } from '../../js/YaptideEditor.js';
 import { SimulationElementJSON } from '../Base/SimulationElement';
+import type { SimulationZoneMaterialJSON } from '../Base/SimulationZone';
 import { DEFAULT_MATERIAL_ICRU, MATERIALS, WORLD_ZONE_DEFAULT_MATERIAL_ICRU } from './materials';
 import SimulationMaterial, {
 	isSimulationMaterial,
@@ -112,6 +113,25 @@ export class MaterialManager
 	getMaterialByUuid(uuid: string): SimulationMaterial | undefined {
 		return Object.values(this._customMaterials).find(material => material.uuid === uuid);
 	}
+
+	resolveMaterialFromJSON({
+		materialUuid,
+		customMaterial
+	}: Pick<SimulationZoneMaterialJSON, 'materialUuid' | 'customMaterial'>):
+		SimulationMaterial | undefined {
+		if (!materialUuid) return this.defaultMaterial;
+
+		const material = this.getMaterialByUuid(
+			customMaterial && materialUuid === customMaterial.uuid
+				? customMaterial.originalMaterialUuid
+				: materialUuid
+		);
+
+		if (material || !customMaterial || !(customMaterial.icru in this.materials))
+			return material;
+
+		return this.materials[customMaterial.icru];
+	}
 	/***************************************************************/
 
 	/*************************ProxyHandling*************************/
@@ -210,6 +230,7 @@ export class MaterialManager
 				.flatMap(output => output.quantities)
 				.map(quantity => quantity.toSerialized())
 				.flatMap(({ materialUuid, customMaterial }) =>
+					// Custom materials are stored in the quantity JSON; their base is found by ICRU on load.
 					materialUuid && !customMaterial ? [materialUuid] : []
 				)
 		);
