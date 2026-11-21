@@ -1,7 +1,7 @@
 import { Builder, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 
-import { byTestId } from '../../../test/seleniumUtils';
+import { activeNavItem, byTestId } from '../../../test/seleniumUtils';
 import { testIds } from '../../../util/testIds';
 
 describe('Simulation Controls', () => {
@@ -35,6 +35,9 @@ describe('Simulation Controls', () => {
 		await driver.wait(until.elementIsEnabled(examplesButton), 5_000);
 		await examplesButton.click();
 
+		// Wait until the "Examples" nav item is marked as the current page
+		await driver.wait(until.elementLocated(activeNavItem(testIds.navItem('examples'))), 10_000);
+
 		// Wait until the "Examples" panel is visible
 		await driver.wait(
 			until.elementLocated(byTestId(testIds.examplesSection(sectionName))),
@@ -47,6 +50,9 @@ describe('Simulation Controls', () => {
 		);
 		await firstExample.isDisplayed();
 		await firstExample.click();
+
+		// Wait until the app switched to the "Editor" nav item
+		await driver.wait(until.elementLocated(activeNavItem(testIds.navItem('editor'))), 10_000);
 
 		//wait for the "load file" dialog to appear
 		const loadFileDialog = await driver.wait(
@@ -81,7 +87,7 @@ describe('Simulation Controls', () => {
 		await runButton.click();
 
 		const simulationsTab = await driver.wait(
-			until.elementLocated(byTestId(testIds.navItem('simulations'))),
+			until.elementLocated(activeNavItem(testIds.navItem('simulations'))),
 			10_000
 		);
 		expect(simulationsTab).toBeTruthy();

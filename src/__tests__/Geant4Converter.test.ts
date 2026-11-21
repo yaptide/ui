@@ -1,7 +1,7 @@
 import { Builder, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 
-import { byTestId } from '../test/seleniumUtils';
+import { activeNavItem, byTestId } from '../test/seleniumUtils';
 import { testIds } from '../util/testIds';
 
 describe('Geant4 Converter', () => {
@@ -44,6 +44,9 @@ describe('Geant4 Converter', () => {
 		await driver.wait(until.elementIsEnabled(examplesButton), 5_000);
 		await examplesButton.click();
 
+		// Wait until the "Examples" nav item is marked as the current page
+		await driver.wait(until.elementLocated(activeNavItem(testIds.navItem('examples'))), 10_000);
+
 		// Wait until the "Examples" panel is visible
 		const geant4Section = await driver.wait(
 			until.elementLocated(byTestId(testIds.examplesSection('GEANT4'))),
@@ -67,6 +70,9 @@ describe('Geant4 Converter', () => {
 
 		// Click the first example
 		await firstExample.click();
+
+		// Wait until the app switched to the "Editor" nav item
+		await driver.wait(until.elementLocated(activeNavItem(testIds.navItem('editor'))), 10_000);
 
 		//wait for the "load file" dialog to appear
 		const loadFileDialog = await driver.wait(
@@ -101,6 +107,12 @@ describe('Geant4 Converter', () => {
 		//find the "Input Files" button on the left menu and click it to open the editor
 		const filesButton = await driver.findElement(byTestId(testIds.navItem('inputFiles')));
 		await filesButton.click();
+
+		// Wait until the "Input files" nav item is marked as the current page
+		await driver.wait(
+			until.elementLocated(activeNavItem(testIds.navItem('inputFiles'))),
+			10_000
+		);
 
 		//wait until the "generate from editor" button and click it (it takes some time for the button to change from "initializing")
 		const generateButton = await driver.wait(
