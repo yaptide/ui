@@ -208,6 +208,7 @@ export class WorldZone extends SimulationElement implements SerializableState<Wo
 
 		const object = this.editor.zoneManager.zoneContainer;
 		this.helper.calculateFromObject(object);
+		this.updatePosition();
 		this.editor.signals.objectChanged.dispatch(this, 'size');
 	}
 
@@ -224,6 +225,7 @@ export class WorldZone extends SimulationElement implements SerializableState<Wo
 		this._simulationMaterial.increment();
 		this.geometryType = 'BoxGeometry';
 		this.helper.reset();
+		this.updatePosition();
 	}
 
 	addHelpersToSceneHelpers(): void {
