@@ -96,15 +96,17 @@ export default function SimulationCardSmall({
 					)}
 					<ButtonGroup fullWidth>
 						<Button
-							variant='outlined'
 							color='secondary'
+							sx={{ color: 'secondary.light' }}
+							variant='outlined'
 							disabled={simulationStatus.jobState !== StatusState.COMPLETED}
 							onClick={loadResults && (() => loadResults(simulationStatus.jobId))}>
 							Load Results
 						</Button>
 						<Button
-							variant='outlined'
 							color='secondary'
+							sx={{ color: 'secondary.light' }}
+							variant='outlined'
 							onClick={() => onClickLoadToEditor(simulationStatus)}>
 							Load to Editor
 						</Button>

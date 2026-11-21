@@ -19,6 +19,7 @@ export function NewProjectDialog({
 			<Button
 				onClick={onClose}
 				color='secondary'
+				sx={{ color: 'secondary.light' }}
 				autoFocus>
 				Cancel
 			</Button>

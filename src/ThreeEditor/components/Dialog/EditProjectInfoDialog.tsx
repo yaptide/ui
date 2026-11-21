@@ -52,7 +52,8 @@ export function EditProjectInfoDialog({
 			<Button
 				onClick={onClose}
 				autoFocus
-				color='secondary'>
+				color='secondary'
+				sx={{ color: 'secondary.light' }}>
 				Cancel
 			</Button>
 			<Button

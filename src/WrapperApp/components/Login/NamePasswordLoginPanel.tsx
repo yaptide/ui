@@ -35,6 +35,7 @@ export default function NamePasswordLoginPanel() {
 		<>
 			<TextField
 				color='secondary'
+				sx={{ '--mui-palette-secondary-main': 'var(--mui-palette-secondary-light)' }}
 				id='loginField'
 				label='Username'
 				variant='outlined'
@@ -44,6 +45,7 @@ export default function NamePasswordLoginPanel() {
 			/>
 			<TextField
 				color='secondary'
+				sx={{ '--mui-palette-secondary-main': 'var(--mui-palette-secondary-light)' }}
 				id='passwordField'
 				label='Password'
 				variant='outlined'

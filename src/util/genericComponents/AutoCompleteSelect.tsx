@@ -32,6 +32,7 @@ export function AutoCompleteSelect<
 					}
 				}}
 				color='secondary'
+				sx={{ '--mui-palette-secondary-main': 'var(--mui-palette-secondary-light)' }}
 				size='small'
 				variant='outlined'
 			/>

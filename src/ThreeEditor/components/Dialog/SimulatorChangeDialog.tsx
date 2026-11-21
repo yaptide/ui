@@ -24,6 +24,7 @@ export function SimulatorChangeDialog({
 					onClose();
 				}}
 				color='secondary'
+				sx={{ color: 'secondary.light' }}
 				autoFocus>
 				Cancel
 			</Button>
