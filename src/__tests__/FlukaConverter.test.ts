@@ -1,7 +1,7 @@
 import { Builder, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 
-import { activeNavItem, byTestId } from '../test/seleniumUtils';
+import { activeNavItem, byTestId, waitForVisibleByTestId } from '../test/seleniumUtils';
 import { testIds } from '../util/testIds';
 
 describe('Fluka Converter', () => {
@@ -48,8 +48,9 @@ describe('Fluka Converter', () => {
 		await driver.wait(until.elementLocated(activeNavItem(testIds.navItem('examples'))), 10_000);
 
 		// Wait until the "Examples" panel is visible
-		const flukaSection = await driver.wait(
-			until.elementLocated(byTestId(testIds.examplesSection('FLUKA'))),
+		const flukaSection = await waitForVisibleByTestId(
+			driver,
+			testIds.examplesSection('FLUKA'),
 			10_000
 		);
 

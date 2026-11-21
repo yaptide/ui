@@ -1,7 +1,7 @@
 import { Builder, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 
-import { activeNavItem, byTestId } from '../../../test/seleniumUtils';
+import { activeNavItem, byTestId, waitForVisibleByTestId } from '../../../test/seleniumUtils';
 import { testIds } from '../../../util/testIds';
 
 describe('Simulation Controls', () => {
@@ -39,10 +39,7 @@ describe('Simulation Controls', () => {
 		await driver.wait(until.elementLocated(activeNavItem(testIds.navItem('examples'))), 10_000);
 
 		// Wait until the "Examples" panel is visible
-		await driver.wait(
-			until.elementLocated(byTestId(testIds.examplesSection(sectionName))),
-			10_000
-		);
+		await waitForVisibleByTestId(driver, testIds.examplesSection(sectionName), 10_000);
 
 		// Find the first example in the section and click it
 		const firstExample = await driver.findElement(
