@@ -61,7 +61,12 @@ const SimulationsGridHelpers = (
 
 	const handleBeforeCacheWrite = useCallback(
 		async (id: string, response: JobStatusData) => {
-			if (id === trackedId && currentJobStatusData[StatusState.COMPLETED](response)) {
+			if (
+				id === trackedId &&
+				currentJobStatusData[StatusState.COMPLETED](response) &&
+				!runFinishShown.has(id)
+			) {
+				runFinishShown.add(id);
 				const fullData = await getFullSimulationData(response, controller.signal);
 				setResultsSimulationData(
 					fullData ? { source: 'onRunFinish', data: fullData } : undefined
@@ -73,11 +78,17 @@ const SimulationsGridHelpers = (
 
 	const updateSimulationData = useCallback(
 		() =>
-			getPageStatus(simulationInfo, true, handleBeforeCacheWrite, controller.signal).then(
-				s => {
-					setSimulationsStatusData([...(s ?? [])]);
-				}
-			),
+			// a tab nobody looks at does not poll; the next tick after it is shown again catches up
+			document.hidden
+				? Promise.resolve()
+				: getPageStatus(
+						simulationInfo,
+						true,
+						handleBeforeCacheWrite,
+						controller.signal
+					).then(s => {
+						setSimulationsStatusData([...(s ?? [])]);
+					}),
 		[
 			getPageStatus,
 			simulationInfo,
@@ -293,5 +304,8 @@ const SimulationsGridHelpers = (
 		submitDelete
 	};
 };
+
+// a finished run opens its results once: the grids see its final status again on every remount
+const runFinishShown = new Set<string>();
 
 export default SimulationsGridHelpers;
