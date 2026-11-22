@@ -21,15 +21,10 @@ const isEditorJson = (data: unknown): data is EditorJson => {
 };
 
 export const isFullSimulationData = (data: unknown): data is FullSimulationData => {
-	return hasFields(
-		data,
-		'input',
-		'estimators',
-		'jobState',
-		'jobId',
-		'jobTasksStatus',
-		'metadata',
-		'startTime'
+	return (
+		hasFields(data, 'input', 'estimators', 'jobState', 'jobId', 'metadata', 'startTime') &&
+		// saved before the status carried totals instead of the task list, or after
+		(hasFields(data, 'jobTasksStatus') || hasFields(data, 'jobTasksSummary'))
 	);
 };
 
