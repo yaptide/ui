@@ -213,8 +213,20 @@ export interface Geant4FigureJSON extends SimulationMeshJSON {
 	simulationMaterial: SerializedSimulationMaterial;
 }
 
+// The root of the Geant4 figure tree is the World volume, which Geant4 requires
+// to be unrotated and placed at the origin of the global coordinate system.
+const isGeant4World = (figure: THREE.Object3D) => !isGeant4Figure(figure.parent);
+
 export class Geant4Box extends BoxFigure {
 	simulationMaterial: SimulationMaterialType;
+
+	get notMovable() {
+		return isGeant4World(this);
+	}
+
+	get notRotatable() {
+		return isGeant4World(this);
+	}
 
 	constructor(
 		editor: YaptideEditor,
@@ -246,6 +258,14 @@ export class Geant4Box extends BoxFigure {
 export class Geant4Cylinder extends CylinderFigure {
 	simulationMaterial: SimulationMaterialType;
 
+	get notMovable() {
+		return isGeant4World(this);
+	}
+
+	get notRotatable() {
+		return isGeant4World(this);
+	}
+
 	constructor(
 		editor: YaptideEditor,
 		geometry?: HollowCylinderGeometry,
@@ -275,6 +295,10 @@ export class Geant4Cylinder extends CylinderFigure {
 
 export class Geant4Sphere extends SphereFigure {
 	simulationMaterial: SimulationMaterialType;
+
+	get notMovable() {
+		return isGeant4World(this);
+	}
 
 	constructor(
 		editor: YaptideEditor,
