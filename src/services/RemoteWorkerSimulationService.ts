@@ -96,25 +96,27 @@ export function getEndpointFromSimulationInfo(info: SimulationInfo) {
 }
 
 /**
- * Rebuilds the references between estimators and their corresponding scoring manager outputs.
- * Each estimator is linked to an output in the scoring manager JSON by matching array indices.
- * The scoringManagerJSON.outputs array length should match the number of estimators - if there are
- * fewer outputs than estimators, the extra estimators will have undefined scoringOutputJsonRef.
- * If there are more outputs than estimators, the extra outputs will be ignored.
+ * Links each estimator to the scoring manager output it was scored by: by the output uuid the backend sends
+ * with the results, or by the output name (which the backend gives the estimator) for results without it.
+ * An estimator no output matches keeps no reference, and the mismatch is reported.
  *
  * @param estimators - Array of estimators that need scoring manager output references rebuilt
- * @param scoringManagerJSON - The scoring manager JSON containing output definitions. The outputs array
- *                            should ideally have the same length as the estimators array to ensure
- *                            all estimators get valid output references.
+ * @param scoringManagerJSON - The scoring manager JSON containing output definitions
  * @returns The estimators array with updated scoring output references for each estimator
  */
 function recreateRefToScoringManagerOutputs(
 	estimators: Estimator[],
 	scoringManagerJSON: ScoringManagerJSON
 ): Estimator[] {
-	// Iterate through each estimator and set the scoringOutputJsonRef to the corresponding output in scoringManagerJSON
-	estimators.forEach((estimator, index) => {
-		estimator.scoringOutputJsonRef = scoringManagerJSON.outputs[index];
+	estimators.forEach(estimator => {
+		estimator.scoringOutputJsonRef = scoringManagerJSON.outputs.find(output =>
+			estimator.outputUuid
+				? output.uuid === estimator.outputUuid
+				: output.name === estimator.name
+		);
+
+		if (!estimator.scoringOutputJsonRef)
+			console.error(`Estimator ${estimator.name} matches no output of the simulation`);
 	});
 
 	return estimators;
@@ -145,11 +147,9 @@ function recreateRefToFilters(estimators: Estimator[], FiltersJSON: FilterJSON[]
 
 /**
  * Recreates references in simulation results by linking estimator data with scoring manager outputs and filters
- * from the editor JSON. This function expects specific array length relationships to work properly:
+ * from the editor JSON:
  *
- * 1. The scoringManager.outputs array length should match the number of estimators, otherwise:
- *    - If fewer outputs than estimators: excess estimators will have undefined scoringOutputJsonRef
- *    - If more outputs than estimators: extra outputs are ignored
+ * 1. Each estimator is linked to its scoring manager output by the output uuid (or name)
  * 2. Within each estimator, the number of pages should match the number of quantities in the
  *    corresponding scoring manager output for proper filter assignment
  *

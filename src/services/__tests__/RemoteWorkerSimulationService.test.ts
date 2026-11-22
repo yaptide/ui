@@ -1,7 +1,10 @@
 import { KyInstance } from 'ky';
 
+import { EditorJson } from '../../ThreeEditor/js/EditorJson';
 import { StatusState } from '../../types/ResponseTypes';
-import RemoteWorkerSimulationService from '../RemoteWorkerSimulationService';
+import RemoteWorkerSimulationService, {
+	recreateRefsInResults
+} from '../RemoteWorkerSimulationService';
 import { resolveStoredPages } from '../storedPages';
 
 jest.mock('../storedPages', () => ({ resolveStoredPages: jest.fn() }));
@@ -121,5 +124,45 @@ describe('pages loaded with a simulation', () => {
 			[{ metadata: { pageNumber: 2 } }, { metadata: { pageNumber: 3 } }],
 			controller.signal
 		);
+	});
+});
+
+describe('results of the editor outputs', () => {
+	const output = (uuid: string, name: string) => ({ uuid, name, quantities: [] });
+	const inputJson = {
+		scoringManager: {
+			outputs: [output('a', 'dose'), output('b', 'dose'), output('c', 'fluence')],
+			filters: []
+		}
+	} as unknown as EditorJson;
+
+	test('estimators in any order get the outputs they were scored by', () => {
+		const estimators = recreateRefsInResults(inputJson, [
+			{ name: 'fluence', outputUuid: 'c', pages: [] },
+			{ name: 'dose', outputUuid: 'b', pages: [] },
+			{ name: 'dose', outputUuid: 'a', pages: [] }
+		]);
+
+		expect(estimators.map(estimator => estimator.scoringOutputJsonRef?.uuid)).toEqual([
+			'c',
+			'b',
+			'a'
+		]);
+	});
+
+	test('results without output uuids are matched by name, and a mismatch is reported', () => {
+		const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+		const estimators = recreateRefsInResults(inputJson, [
+			{ name: 'other', pages: [] },
+			{ name: 'fluence', pages: [] }
+		]);
+
+		expect(estimators.map(estimator => estimator.scoringOutputJsonRef?.uuid)).toEqual([
+			undefined,
+			'c'
+		]);
+		expect(error).toHaveBeenCalledWith('Estimator other matches no output of the simulation');
+		error.mockRestore();
 	});
 });
