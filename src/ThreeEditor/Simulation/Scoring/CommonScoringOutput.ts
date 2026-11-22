@@ -35,7 +35,8 @@ export class CommonScoringOutput
 	set zone(zone: SimulationZone | null) {
 		this._zone = zone?.uuid;
 		this.geometry = null;
-		this.signals.objectSelected.dispatch(this);
+
+		if (this.editor.selected === this) this.signals.objectSelected.dispatch(this);
 	}
 
 	override get scoringType(): SCORING_TYPE_ENUM {

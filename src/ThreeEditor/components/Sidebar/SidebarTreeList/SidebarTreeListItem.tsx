@@ -169,6 +169,7 @@ export function SidebarTreeListItem(props: {
 			<IconComponent
 				color={hidesSelected ? 'secondary' : undefined}
 				onClick={onToggle}
+				sx={{ cursor: 'pointer' }}
 			/>
 		);
 	} else if (node.parent) {
