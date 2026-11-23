@@ -217,7 +217,7 @@ export class WorldZone extends SimulationElement implements SerializableState<Wo
 	}
 
 	reset(): void {
-		this.debouncedCalculate.cancel();
+		this.debouncedCalculate.cancel({ upcomingOnly: true });
 
 		this._material.color.set(_defaultColor);
 		this.name = 'World Zone';
