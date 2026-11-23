@@ -210,7 +210,7 @@
 		"lint-staged": "^17.6.1",
 		"prettier": "3.10.1",
 		"react-app-rewired": "^2.2.1",
-		"selenium-webdriver": "^4.52.0"
+		"selenium-webdriver": "^4.53.0"
 	},
 	"lint-staged": {
 		"*.{ts,tsx,js,jsx}": [
