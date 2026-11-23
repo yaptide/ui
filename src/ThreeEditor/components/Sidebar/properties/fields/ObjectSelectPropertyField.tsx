@@ -1,5 +1,4 @@
-import { AutoCompleteSelect } from '../../../../../util/genericComponents/AutoCompleteSelect';
-import { PropertyField, usePropertyFieldLabelId } from './PropertyField';
+import { LabelledAutoCompleteSelect, PropertyField } from './PropertyField';
 
 export interface ObjectSelectProps {
 	options: Record<string | number, string>;
@@ -14,7 +13,6 @@ export type ObjectSelectOptionType = {
 };
 
 export function ObjectSelectProperty(props: ObjectSelectProps) {
-	const labelId = usePropertyFieldLabelId();
 	const optionMap = new Map<string | number, ObjectSelectOptionType>();
 
 	const options = Object.entries(props.options).map(([key, value]) => {
@@ -25,7 +23,7 @@ export function ObjectSelectProperty(props: ObjectSelectProps) {
 	});
 
 	return (
-		<AutoCompleteSelect
+		<LabelledAutoCompleteSelect
 			onChange={(_event, newValue) => {
 				if (newValue !== null) props.onChange?.call(null, newValue);
 			}}
@@ -33,7 +31,6 @@ export function ObjectSelectProperty(props: ObjectSelectProps) {
 			options={options}
 			getOptionLabel={option => option.label || ''}
 			isOptionEqualToValue={(option, value) => option.uuid === value.uuid}
-			labelId={labelId}
 			ariaLabel={props.ariaLabel}
 		/>
 	);

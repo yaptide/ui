@@ -27,7 +27,7 @@ export function NewProjectDialog({
 			<Button
 				color='secondary'
 				variant='contained'
-				data-testid={`${testIds.dialog('new-project')}-confirm`}
+				data-testid={testIds.dialogAction('new-project', 'confirm')}
 				onClick={() => {
 					if (yaptideEditor) {
 						yaptideEditor.clear();

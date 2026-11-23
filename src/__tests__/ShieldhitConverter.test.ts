@@ -112,13 +112,13 @@ describe('ShieldhitConverter', () => {
 		//check if the version warning is not present
 		expect(
 			await loadFileDialog.findElements(
-				byTestId(`${testIds.dialog('load-file')}-version-warning`)
+				byTestId(testIds.dialogAction('load-file', 'version-warning'))
 			)
 		).toHaveLength(0);
 
 		//find the "clear and proceed" button and click it
 		const clearAndProceedButton = await loadFileDialog.findElement(
-			byTestId(`${testIds.dialog('load-file')}-confirm`)
+			byTestId(testIds.dialogAction('load-file', 'confirm'))
 		);
 		expect(await clearAndProceedButton.isEnabled()).toEqual(true);
 		await clearAndProceedButton.click();

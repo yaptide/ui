@@ -74,7 +74,7 @@ describe('Simulation Controls', () => {
 
 		//find the "clear and proceed" button and click it
 		const clearAndProceedButton = await loadFileDialog.findElement(
-			byTestId(`${testIds.dialog('load-file')}-confirm`)
+			byTestId(testIds.dialogAction('load-file', 'confirm'))
 		);
 		expect(await clearAndProceedButton.isEnabled()).toEqual(true);
 		await clearAndProceedButton.click();

@@ -37,7 +37,9 @@ export function EditProjectInfoDialog({
 						}}
 						label='Project Title'
 						slotProps={{
-							htmlInput: { 'data-testid': 'edit-project-title-input' }
+							htmlInput: {
+								'data-testid': testIds.dialogInput('edit-project', 'title')
+							}
 						}}
 						value={title}
 						onChange={e => setTitle(e.target.value)}
@@ -50,7 +52,9 @@ export function EditProjectInfoDialog({
 						multiline
 						label='Project Description'
 						slotProps={{
-							htmlInput: { 'data-testid': 'edit-project-description-input' }
+							htmlInput: {
+								'data-testid': testIds.dialogInput('edit-project', 'description')
+							}
 						}}
 						value={description}
 						onChange={e => setDescription(e.target.value)}
@@ -61,13 +65,13 @@ export function EditProjectInfoDialog({
 				onClick={onClose}
 				autoFocus
 				color='secondary'
-				data-testid={`${testIds.dialog('edit-project')}-cancel`}>
+				data-testid={testIds.dialogAction('edit-project', 'cancel')}>
 				Cancel
 			</Button>
 			<Button
 				variant='contained'
 				color='secondary'
-				data-testid={`${testIds.dialog('edit-project')}-save`}
+				data-testid={testIds.dialogAction('edit-project', 'save')}
 				onClick={() => {
 					if (yaptideEditor) {
 						yaptideEditor.config.setKey('project/title', title);

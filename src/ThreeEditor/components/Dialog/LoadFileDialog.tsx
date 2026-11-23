@@ -31,7 +31,7 @@ export function LoadFileDialog({
 						variant='body1'
 						color='error'
 						component={'div'}
-						data-testid={`${testIds.dialog('load-file')}-version-warning`}
+						data-testid={testIds.dialogAction('load-file', 'version-warning')}
 						sx={{
 							marginTop: '1rem',
 							fontWeight: 'bold'
@@ -45,7 +45,7 @@ export function LoadFileDialog({
 				)
 			}>
 			<Button
-				data-testid={`${testIds.dialog('load-file')}-cancel`}
+				data-testid={testIds.dialogAction('load-file', 'cancel')}
 				onClick={onClose}
 				color='secondary'
 				autoFocus>
@@ -53,7 +53,7 @@ export function LoadFileDialog({
 			</Button>
 			<Button
 				disabled={!data}
-				data-testid={`${testIds.dialog('load-file')}-confirm`}
+				data-testid={testIds.dialogAction('load-file', 'confirm')}
 				variant='contained'
 				color='secondary'
 				onClick={() => {

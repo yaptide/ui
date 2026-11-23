@@ -169,6 +169,7 @@ function OperationInput({
 				</Box>
 			)}
 			<ToggleButtonGroup
+				aria-label={objectName ? `Boolean operation: ${objectName}` : 'Boolean operation'}
 				{...restProps}
 				exclusive={exclusive}
 				value={value}
@@ -179,8 +180,7 @@ function OperationInput({
 						borderRadius: `4px ${value ? '4px 0 0' : ''}`,
 						width: '100%'
 					}
-				}}
-				aria-label={objectName ? `Boolean operation: ${objectName}` : 'Boolean operation'}>
+				}}>
 				{allowedOperations.map((operation, index) => (
 					<Tooltip
 						title={OperationToTooltip(operation, objectName)}

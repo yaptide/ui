@@ -72,7 +72,7 @@ describe('Project Menu', () => {
 		);
 
 		const confirmButton = await newProjectDialog.findElement(
-			byTestId(`${testIds.dialog('new-project')}-confirm`)
+			byTestId(testIds.dialogAction('new-project', 'confirm'))
 		);
 		await confirmButton.click();
 
@@ -100,17 +100,17 @@ describe('Project Menu', () => {
 		// Input new title and description
 
 		const titleInput = await projectDescriptionDialog.findElement(
-			byTestId('edit-project-title-input')
+			byTestId(testIds.dialogInput('edit-project', 'title'))
 		);
 		await titleInput.sendKeys('\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bMy Title'); // \b backspace to remove default title
 
 		const descriptionInput = await projectDescriptionDialog.findElement(
-			byTestId('edit-project-description-input')
+			byTestId(testIds.dialogInput('edit-project', 'description'))
 		);
 		await descriptionInput.sendKeys('My Description');
 
 		await projectDescriptionDialog
-			.findElement(byTestId(`${testIds.dialog('edit-project')}-save`))
+			.findElement(byTestId(testIds.dialogAction('edit-project', 'save')))
 			.click();
 
 		// Give it time to reload
@@ -127,7 +127,7 @@ describe('Project Menu', () => {
 
 		const descriptionText = await driver
 			.findElement(byTestId(testIds.dialog('edit-project')))
-			.findElement(byTestId('edit-project-description-input'))
+			.findElement(byTestId(testIds.dialogInput('edit-project', 'description')))
 			.getText();
 		expect(descriptionText).toEqual('My Description');
 	}, 50_000);

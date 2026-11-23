@@ -65,6 +65,33 @@ export function usePropertyFieldLabelId(): string | undefined {
 	return useContext(PropertyFieldLabelIdContext);
 }
 
+/**
+ * Applies the accessible name to a raw DOM node created outside React: an explicit
+ * `ariaLabel` wins, otherwise the `id` of the enclosing `PropertyField` label
+ * (`labelId`). The attributes are kept in sync while the node is mounted.
+ */
+function useImperativeAccessibleName(dom: HTMLElement, ariaLabel?: string) {
+	const labelId = usePropertyFieldLabelId();
+
+	useEffect(() => {
+		if (ariaLabel) {
+			dom.setAttribute('aria-label', ariaLabel);
+			dom.removeAttribute('aria-labelledby');
+		} else if (labelId) {
+			dom.setAttribute('aria-labelledby', labelId);
+			dom.removeAttribute('aria-label');
+		} else {
+			dom.removeAttribute('aria-label');
+			dom.removeAttribute('aria-labelledby');
+		}
+
+		return () => {
+			dom.removeAttribute('aria-label');
+			dom.removeAttribute('aria-labelledby');
+		};
+	}, [dom, labelId, ariaLabel]);
+}
+
 export function PropertyField(props: { label?: string; disabled?: boolean; children: ReactNode }) {
 	const labelId = useId();
 
@@ -247,7 +274,6 @@ export function NumberInput(props: {
 	ariaLabel?: string;
 	onChange: (value: number) => void;
 }) {
-	const labelId = usePropertyFieldLabelId();
 	const theme = useTheme();
 	const boxRef = useRef<HTMLDivElement>(null);
 
@@ -261,27 +287,7 @@ export function NumberInput(props: {
 		})
 	);
 
-	useEffect(() => {
-		// The input is a raw DOM node created outside React, so the accessible name
-		// has to be applied imperatively and kept in sync with the label id.
-		const dom = inputRef.current.dom;
-
-		if (props.ariaLabel) {
-			dom.setAttribute('aria-label', props.ariaLabel);
-			dom.removeAttribute('aria-labelledby');
-		} else if (labelId) {
-			dom.setAttribute('aria-labelledby', labelId);
-			dom.removeAttribute('aria-label');
-		} else {
-			dom.removeAttribute('aria-label');
-			dom.removeAttribute('aria-labelledby');
-		}
-
-		return () => {
-			dom.removeAttribute('aria-label');
-			dom.removeAttribute('aria-labelledby');
-		};
-	}, [labelId, props.ariaLabel]);
+	useImperativeAccessibleName(inputRef.current.dom, props.ariaLabel);
 
 	useEffect(() => {
 		if (props.unit) {
@@ -338,34 +344,13 @@ export function ColorInput(props: {
 	onChange: (value: number) => void;
 	ariaLabel?: string;
 }) {
-	const labelId = usePropertyFieldLabelId();
 	const boxRef = useRef<HTMLDivElement>(null);
 
 	const input = useMemo(() => {
 		return createRowColor({})[1];
 	}, []);
 
-	useEffect(() => {
-		// The input is a raw DOM node created outside React, so the accessible name
-		// has to be applied imperatively and kept in sync with the label id.
-		const dom = input.dom;
-
-		if (props.ariaLabel) {
-			dom.setAttribute('aria-label', props.ariaLabel);
-			dom.removeAttribute('aria-labelledby');
-		} else if (labelId) {
-			dom.setAttribute('aria-labelledby', labelId);
-			dom.removeAttribute('aria-label');
-		} else {
-			dom.removeAttribute('aria-label');
-			dom.removeAttribute('aria-labelledby');
-		}
-
-		return () => {
-			dom.removeAttribute('aria-label');
-			dom.removeAttribute('aria-labelledby');
-		};
-	}, [input, labelId, props.ariaLabel]);
+	useImperativeAccessibleName(input.dom, props.ariaLabel);
 
 	useEffect(() => {
 		if (!boxRef.current) return;

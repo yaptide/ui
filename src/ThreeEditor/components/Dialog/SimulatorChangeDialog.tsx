@@ -21,7 +21,7 @@ export function SimulatorChangeDialog({
 			title='Simulator Change Alert'
 			contentText={text}>
 			<Button
-				data-testid={`${testIds.dialog('simulator-change')}-cancel`}
+				data-testid={testIds.dialogAction('simulator-change', 'cancel')}
 				onClick={() => {
 					closeAction();
 					onClose();
@@ -31,7 +31,7 @@ export function SimulatorChangeDialog({
 				Cancel
 			</Button>
 			<Button
-				data-testid={`${testIds.dialog('simulator-change')}-confirm`}
+				data-testid={testIds.dialogAction('simulator-change', 'confirm')}
 				variant='contained'
 				color='secondary'
 				onClick={() => {

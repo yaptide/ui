@@ -1,8 +1,7 @@
 import { SyntheticEvent } from 'react';
 
 import { Particle } from '../../../types/Particle';
-import { AutoCompleteSelect } from '../../../util/genericComponents/AutoCompleteSelect';
-import { usePropertyFieldLabelId } from '../Sidebar/properties/fields/PropertyField';
+import { LabelledAutoCompleteSelect } from '../Sidebar/properties/fields/PropertyField';
 
 export interface ParticleSelectProps {
 	onChange?: (event: SyntheticEvent<Element, Event>, newValue: number) => void;
@@ -11,21 +10,18 @@ export interface ParticleSelectProps {
 }
 
 export function ParticleSelect(props: ParticleSelectProps) {
-	const labelId = usePropertyFieldLabelId();
-
 	const getOptionLabel = ({ id, name }: Particle) => {
 		return `[${id}] ${name}`;
 	};
 
 	return (
-		<AutoCompleteSelect
+		<LabelledAutoCompleteSelect
 			onChange={(event, newValue) => {
 				if (newValue !== null) props.onChange?.call(null, event, newValue.id);
 			}}
 			value={props.particles.find(p => p.id === props.value)}
 			options={props.particles}
 			getOptionLabel={option => getOptionLabel(option)}
-			labelId={labelId}
 		/>
 	);
 }
