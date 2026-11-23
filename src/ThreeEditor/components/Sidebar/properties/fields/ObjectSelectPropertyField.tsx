@@ -33,7 +33,7 @@ export function ObjectSelectProperty(props: ObjectSelectProps) {
 			options={options}
 			getOptionLabel={option => option.label || ''}
 			isOptionEqualToValue={(option, value) => option.uuid === value.uuid}
-			labelId={props.ariaLabel ? undefined : labelId}
+			labelId={labelId}
 			ariaLabel={props.ariaLabel}
 		/>
 	);

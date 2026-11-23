@@ -118,7 +118,10 @@ function LabelledTextField(props: TextFieldProps) {
 	return (
 		<TextField
 			{...props}
-			slotProps={{ htmlInput: { 'aria-labelledby': labelId } }}
+			slotProps={{
+				...props.slotProps,
+				htmlInput: { ...props.slotProps?.htmlInput, 'aria-labelledby': labelId }
+			}}
 		/>
 	);
 }
@@ -139,7 +142,10 @@ function LabelledCheckbox(props: CheckboxProps) {
 	return (
 		<Checkbox
 			{...props}
-			slotProps={{ input: { 'aria-labelledby': labelId } }}
+			slotProps={{
+				...props.slotProps,
+				input: { ...props.slotProps?.input, 'aria-labelledby': labelId }
+			}}
 		/>
 	);
 }
@@ -158,7 +164,7 @@ export function LabelledAutoCompleteSelect<
 	return (
 		<AutoCompleteSelect<T, Multiple, FreeSolo>
 			{...props}
-			labelId={labelId}
+			labelId={props.labelId ?? labelId}
 		/>
 	);
 }
@@ -173,7 +179,7 @@ export function LabelledSelect(props: SelectProps) {
 	return (
 		<Select
 			{...props}
-			labelId={labelId}
+			labelId={props.labelId ?? labelId}
 		/>
 	);
 }

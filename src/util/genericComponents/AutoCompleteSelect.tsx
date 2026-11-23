@@ -34,7 +34,7 @@ export function AutoCompleteSelect<
 					...params.slotProps,
 					htmlInput: {
 						...params.slotProps.htmlInput,
-						...(labelId !== undefined && { 'aria-labelledby': labelId }),
+						...(ariaLabel === undefined && { 'aria-labelledby': labelId }),
 						...(ariaLabel !== undefined && { 'aria-label': ariaLabel })
 					},
 					input: {
