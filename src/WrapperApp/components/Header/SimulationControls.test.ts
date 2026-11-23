@@ -28,7 +28,7 @@ describe('Simulation Controls', () => {
 	async function loadExample(sectionName: 'GEANT4' | 'SHIELDHIT' | 'COMMON') {
 		await driver.get('http://localhost:3000');
 
-		// Wait for "Examples" button being enabled and click it
+		// Wait for the "Examples" nav item, then until it is enabled, and click it
 		await driver.wait(until.elementLocated(byTestId(testIds.navItem('examples'))), 5_000);
 
 		const examplesButton = await driver.findElement(byTestId(testIds.navItem('examples')));
@@ -45,7 +45,7 @@ describe('Simulation Controls', () => {
 		const firstExample = await driver.findElement(
 			byTestId(testIds.examplesChip(sectionName, 0))
 		);
-		await firstExample.isDisplayed();
+		expect(await firstExample.isDisplayed()).toBeTruthy();
 		await firstExample.click();
 
 		// Wait until the app switched to the "Editor" nav item
@@ -58,6 +58,19 @@ describe('Simulation Controls', () => {
 		);
 
 		await driver.sleep(1000); // wait for modal to fade in
+
+		// The dialog must be labelled/described by its title and content elements
+		expect(await loadFileDialog.getAttribute('aria-labelledby')).toBe(
+			await loadFileDialog
+				.findElement(byTestId(testIds.dialogTitle('load-file')))
+				.getAttribute('id')
+		);
+
+		expect(await loadFileDialog.getAttribute('aria-describedby')).toBe(
+			await loadFileDialog
+				.findElement(byTestId(testIds.dialogContent('load-file')))
+				.getAttribute('id')
+		);
 
 		//find the "clear and proceed" button and click it
 		const clearAndProceedButton = await loadFileDialog.findElement(

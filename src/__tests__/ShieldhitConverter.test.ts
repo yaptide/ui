@@ -96,6 +96,19 @@ describe('ShieldhitConverter', () => {
 			await loadFileDialog.findElement(byTestId(testIds.dialogContent('load-file'))).getText()
 		).toBe('Loaded data will replace current project data. Are you sure you want to continue?');
 
+		// The dialog must be labelled/described by its title and content elements
+		expect(await loadFileDialog.getAttribute('aria-labelledby')).toBe(
+			await loadFileDialog
+				.findElement(byTestId(testIds.dialogTitle('load-file')))
+				.getAttribute('id')
+		);
+
+		expect(await loadFileDialog.getAttribute('aria-describedby')).toBe(
+			await loadFileDialog
+				.findElement(byTestId(testIds.dialogContent('load-file')))
+				.getAttribute('id')
+		);
+
 		//check if the version warning is not present
 		expect(
 			await loadFileDialog.findElements(

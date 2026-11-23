@@ -29,7 +29,7 @@ describe('Project Menu', () => {
 
 		// Open Editor screen
 
-		// Wait for "Editor" button being enabled and click it
+		// Wait for the "Editor" nav item, then until it is enabled, and click it
 		await driver.wait(until.elementLocated(byTestId(testIds.navItem('editor'))), 5_000);
 
 		const editorButton = await driver.findElement(byTestId(testIds.navItem('editor')));
@@ -38,7 +38,7 @@ describe('Project Menu', () => {
 
 		// Click Project > New
 
-		// Wait for Project menu to be visible
+		// Wait for the Project menu button to appear (the Editor header is mounted only on the Editor tab)
 		await driver.wait(until.elementLocated(byTestId(testIds.menuButton('project'))), 5_000);
 
 		const projectMenuButton = await driver.findElement(byTestId(testIds.menuButton('project')));
