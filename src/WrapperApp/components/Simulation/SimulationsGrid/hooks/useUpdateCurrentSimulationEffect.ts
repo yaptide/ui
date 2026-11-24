@@ -17,7 +17,8 @@ export const useUpdateCurrentSimulationEffect = (
 		let stale = false;
 		const updateCurrentSimulation = async () => {
 			if (shouldConnect && yaptideEditor) {
-				const hash = yaptideEditor.toSerialized().hash;
+				// the editor as it is now, or the input it was loaded from while it is unchanged
+				const hashes = [yaptideEditor.toSerialized().hash, yaptideEditor.loadedInput?.hash];
 				// find() with an async callback always took the first simulation, a promise is truthy
 				let currentStatus;
 
@@ -28,7 +29,9 @@ export const useUpdateCurrentSimulationEffect = (
 						() => undefined
 					);
 
-					if (jobInputs?.input.inputJson?.hash === hash) {
+					const inputHash = jobInputs?.input.inputJson?.hash;
+
+					if (inputHash && hashes.includes(inputHash)) {
 						currentStatus = s;
 
 						break;
