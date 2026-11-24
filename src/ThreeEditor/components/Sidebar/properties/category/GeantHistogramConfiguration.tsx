@@ -1,4 +1,4 @@
-import { MenuItem, Select } from '@mui/material';
+import { MenuItem } from '@mui/material';
 import { Object3D } from 'three';
 
 import { SimulatorType } from '../../../../../types/RequestTypes';
@@ -7,7 +7,7 @@ import { SetQuantityValueCommand } from '../../../../js/commands/SetQuantityValu
 import { YaptideEditor } from '../../../../js/YaptideEditor';
 import { isDifferentiable } from '../../../../Simulation/Scoring/ScoringOutputTypes';
 import { isScoringQuantity, ScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
-import { NumberPropertyField, PropertyField } from '../fields/PropertyField';
+import { LabelledSelect, NumberPropertyField, PropertyField } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
 
 const kineticEnergyUnits = ['meV', 'eV', 'keV', 'MeV', 'GeV'];
@@ -57,7 +57,7 @@ export function GeantHistogramConfiguration(props: { editor: YaptideEditor; obje
 						onChange={v => setQuantityValue('histogramMax', v)}
 					/>
 					<PropertyField label='Unit'>
-						<Select
+						<LabelledSelect
 							variant={'standard'}
 							sx={{ width: '100%' }}
 							size='small'
@@ -72,10 +72,10 @@ export function GeantHistogramConfiguration(props: { editor: YaptideEditor; obje
 									{unit}
 								</MenuItem>
 							))}
-						</Select>
+						</LabelledSelect>
 					</PropertyField>
 					<PropertyField label='X Axis Scale'>
-						<Select
+						<LabelledSelect
 							variant={'standard'}
 							sx={{ width: '100%' }}
 							size='small'
@@ -90,10 +90,10 @@ export function GeantHistogramConfiguration(props: { editor: YaptideEditor; obje
 									{unit}
 								</MenuItem>
 							))}
-						</Select>
+						</LabelledSelect>
 					</PropertyField>
 					<PropertyField label='X Axis Bin Scheme'>
-						<Select
+						<LabelledSelect
 							variant={'standard'}
 							sx={{ width: '100%' }}
 							size='small'
@@ -108,7 +108,7 @@ export function GeantHistogramConfiguration(props: { editor: YaptideEditor; obje
 									{unit}
 								</MenuItem>
 							))}
-						</Select>
+						</LabelledSelect>
 					</PropertyField>
 				</>
 			)}

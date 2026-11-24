@@ -15,6 +15,7 @@ import { useConfig } from '../../../config/ConfigService';
 import { useDialog } from '../../../services/DialogService';
 import { useStore } from '../../../services/StoreService';
 import { SimulatorType } from '../../../types/RequestTypes';
+import { testIds } from '../../../util/testIds';
 import { useIsBackendAlive } from '../Simulation/SimulationsGrid/hooks/useBackendAliveEffect';
 
 const SimulatorsDescriptions: Record<SimulatorType, { name: string; description: string }> = {
@@ -49,6 +50,7 @@ function SimulatorSelectItem({ simulator, onClick }: SimulationSelectItemProps) 
 	return (
 		<ListItemButton
 			onClick={onClick}
+			data-testid={testIds.simulatorOption(simulator)}
 			sx={{ '&:hover': { borderRadius: 1 } }}>
 			<ListItemText
 				primary={
@@ -115,7 +117,7 @@ export default function SimulatorControls(props: SimulationControlsProps) {
 	return (
 		<>
 			<Typography
-				id='simulator-controls-status'
+				data-testid={testIds.simulatorStatus}
 				sx={{
 					userSelect: 'none',
 					color: simulatorReady ? 'primary.main' : theme.palette.grey['600']
@@ -127,7 +129,7 @@ export default function SimulatorControls(props: SimulationControlsProps) {
 						: 'Unreachable'}
 			</Typography>
 			<Button
-				id='simulator-controls-select'
+				data-testid={testIds.simulatorSelect}
 				sx={{
 					height: '36px',
 					width: '180px',
@@ -155,7 +157,7 @@ export default function SimulatorControls(props: SimulationControlsProps) {
 				)}
 			</Button>
 			<Button
-				id='simulator-controls-run'
+				data-testid={testIds.simulatorRun}
 				variant='contained'
 				disabled={!simulatorReady}
 				onClick={() => props.handleTabChange('simulations')}
@@ -164,7 +166,7 @@ export default function SimulatorControls(props: SimulationControlsProps) {
 				<Typography>Run</Typography>
 			</Button>
 			<Popover
-				id='simulator-controls-popover-select'
+				data-testid={testIds.simulatorPopover}
 				open={!!anchorEl}
 				anchorEl={anchorEl}
 				onClose={() => setAnchorEl(null)}>

@@ -274,6 +274,13 @@ export function SidebarTreeListItem(props: {
 							}}
 							icon={<VisibilityOffIcon />}
 							checkedIcon={<VisibilityIcon />}
+							slotProps={{
+								input: {
+									'aria-label': watchedObject.name
+										? `Visibility: ${watchedObject.name}`
+										: 'Visibility'
+								}
+							}}
 						/>
 					)}
 				</Stack>

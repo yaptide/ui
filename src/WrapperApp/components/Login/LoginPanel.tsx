@@ -69,6 +69,7 @@ export default function LoginPanel() {
 						{altAuth && (
 							<Box sx={{ width: '100%' }}>
 								<IconButton
+									aria-label='Back to PLGrid login'
 									size='small'
 									onClick={() => setNamePasswordLoginSelected(false)}>
 									<ArrowBack />

@@ -59,7 +59,7 @@ export function OpenFileDialog({
 							centered
 							value={value}
 							onChange={handleChange}
-							aria-label='open project tabs example'>
+							aria-label='Open project source'>
 							{tabList.map((tab, idx) => (
 								<StyledTab
 									label={tab}
@@ -89,6 +89,7 @@ export function OpenFileDialog({
 								{/* Tooltip requires a non disabled child to properly handle events */}
 								<span>
 									<IconButton
+										aria-label='Clear selection'
 										color='error'
 										sx={{
 											position: 'absolute',
@@ -136,6 +137,9 @@ export function OpenFileDialog({
 								variant='outlined'
 								value={url}
 								onChange={handleUrlChange}
+								slotProps={{
+									htmlInput: { 'aria-label': 'Paste project URL here' }
+								}}
 							/>
 							<Button
 								variant='contained'
@@ -169,6 +173,9 @@ export function OpenFileDialog({
 								variant='outlined'
 								value={plainText}
 								onChange={handlePlainTextChange}
+								slotProps={{
+									htmlInput: { 'aria-label': 'Paste project JSON here' }
+								}}
 							/>
 							<Button
 								variant='contained'

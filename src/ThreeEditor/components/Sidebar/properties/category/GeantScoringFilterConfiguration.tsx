@@ -2,7 +2,6 @@ import { Typography } from '@mui/material';
 import { Object3D } from 'three';
 
 import { GEANT4_PARTICLE_TYPES, Particle } from '../../../../../types/Particle';
-import { AutoCompleteSelect } from '../../../../../util/genericComponents/AutoCompleteSelect';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
@@ -10,7 +9,11 @@ import {
 	GeantScoringFilter,
 	isGeantScoringFilter
 } from '../../../../Simulation/Scoring/GeantScoringFilter';
-import { NumberPropertyField, PropertyField } from '../fields/PropertyField';
+import {
+	LabelledAutoCompleteSelect,
+	NumberPropertyField,
+	PropertyField
+} from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
 
 const filterTypeNames = [
@@ -44,7 +47,7 @@ export function GeantScoringFilterConfiguration(props: {
 			{visibleFlag && (
 				<>
 					<PropertyField label='Type'>
-						<AutoCompleteSelect
+						<LabelledAutoCompleteSelect
 							onChange={(_, value) => {
 								setValueCommand(value, 'filterType');
 							}}
@@ -55,7 +58,7 @@ export function GeantScoringFilterConfiguration(props: {
 					{(watchedObject.filterType === 'particle' ||
 						watchedObject.filterType === 'particleWithKineticEnergy') && (
 						<PropertyField label='Particles'>
-							<AutoCompleteSelect<Particle, true>
+							<LabelledAutoCompleteSelect<Particle, true>
 								multiple={true}
 								onChange={(_, value) => {
 									setValueCommand(
@@ -101,7 +104,7 @@ export function GeantScoringFilterConfiguration(props: {
 								}
 							/>
 							<PropertyField label='Unit'>
-								<AutoCompleteSelect
+								<LabelledAutoCompleteSelect
 									value={watchedObject.data.kineticEnergyUnit}
 									onChange={(_, value) =>
 										setValueCommand(

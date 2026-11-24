@@ -2,6 +2,7 @@ import { Box, Chip, Divider, Typography } from '@mui/material';
 
 import EXAMPLES, { useFetchExampleData } from '../../../examples/examples';
 import { SimulatorType } from '../../../types/RequestTypes';
+import { testIds } from '../../../util/testIds';
 
 interface ExamplePanelProps {
 	setTabsValue: (value: string) => void;
@@ -15,22 +16,26 @@ export function ExamplePanel({ setTabsValue }: ExamplePanelProps) {
 			{Object.values(SimulatorType).map(simulator => (
 				<Box
 					key={simulator}
+					data-testid={testIds.examplesSection(simulator)}
 					sx={{ marginBottom: 4, width: '500px' }}>
 					<Typography variant='h5'>{simulator.toUpperCase()}</Typography>
 					<Divider sx={{ marginTop: 1, marginBottom: 1 }} />
 					<Box>
-						{Object.entries(EXAMPLES[simulator]).map(([exampleName, fileName]) => (
-							<Chip
-								key={fileName}
-								sx={{ fontSize: 12, margin: 0.5 }}
-								label={exampleName}
-								onClick={() => {
-									fetchExampleData(fileName);
-									// Change the tab to 'editor' after loading the example
-									setTabsValue('editor');
-								}}
-							/>
-						))}
+						{Object.entries(EXAMPLES[simulator]).map(
+							([exampleName, fileName], index) => (
+								<Chip
+									key={fileName}
+									data-testid={testIds.examplesChip(simulator, index)}
+									sx={{ fontSize: 12, margin: 0.5 }}
+									label={exampleName}
+									onClick={() => {
+										fetchExampleData(fileName);
+										// Change the tab to 'editor' after loading the example
+										setTabsValue('editor');
+									}}
+								/>
+							)
+						)}
 					</Box>
 				</Box>
 			))}

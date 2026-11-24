@@ -2,7 +2,6 @@ import { Divider, ToggleButton } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import { Object3D } from 'three';
 
-import { StyledExclusiveToggleButtonGroup } from '../../../../../shared/components/StyledExclusiveToggleButtonGroup';
 import {
 	COMMON_PARTICLE_TYPES,
 	FLUKA_PARTICLE_TYPES,
@@ -25,6 +24,7 @@ import {
 } from '../../../../Simulation/Physics/Beam';
 import { ParticleSelect } from '../../../Select/ParticleSelect';
 import {
+	LabelledExclusiveToggleButtonGroup,
 	NumberPropertyField,
 	PropertyField,
 	SelectPropertyField,
@@ -231,7 +231,7 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 			{editor.contextManager.currentSimulator !== SimulatorType.GEANT4 && (
 				<>
 					<PropertyField label='Definition type'>
-						<StyledExclusiveToggleButtonGroup
+						<LabelledExclusiveToggleButtonGroup
 							size='small'
 							value={watchedObject.sourceType}
 							onChange={(_, v) => {
@@ -241,7 +241,7 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 							{editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
 								<ToggleButton value={BEAM_SOURCE_TYPE.file}>File</ToggleButton>
 							)}
-						</StyledExclusiveToggleButtonGroup>
+						</LabelledExclusiveToggleButtonGroup>
 					</PropertyField>
 					<PropertyField children={<Divider />} />
 				</>
@@ -308,16 +308,15 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 				<>
 					{shouldShowEnergyUnit(watchedObject.particleData) && (
 						<PropertyField label='Energy unit'>
-							<StyledExclusiveToggleButtonGroup
+							<LabelledExclusiveToggleButtonGroup
 								value={energyUnit}
 								onChange={(_, value: EnergyUnit) =>
 									updateEnergyInputs(energyUnit, value)
 								}
-								aria-label='energy unit'
 								size='small'>
 								<ToggleButton value={'MeV'}>MeV</ToggleButton>
 								<ToggleButton value={'MeV/nucl'}>MeV / nucl</ToggleButton>
-							</StyledExclusiveToggleButtonGroup>
+							</LabelledExclusiveToggleButtonGroup>
 						</PropertyField>
 					)}
 					<NumberPropertyField

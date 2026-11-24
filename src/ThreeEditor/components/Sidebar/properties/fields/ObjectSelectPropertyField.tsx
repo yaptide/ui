@@ -1,10 +1,10 @@
-import { AutoCompleteSelect } from '../../../../../util/genericComponents/AutoCompleteSelect';
-import { PropertyField } from './PropertyField';
+import { LabelledAutoCompleteSelect, PropertyField } from './PropertyField';
 
 export interface ObjectSelectProps {
 	options: Record<string | number, string>;
 	groups?: Record<string, string>;
 	value: string | number;
+	ariaLabel?: string;
 	onChange: (value: ObjectSelectOptionType) => void;
 }
 
@@ -28,7 +28,7 @@ export function ObjectSelectProperty(props: ObjectSelectProps) {
 	if (groups) options.sort((a, b) => (groups[a.uuid] ?? '').localeCompare(groups[b.uuid] ?? ''));
 
 	return (
-		<AutoCompleteSelect
+		<LabelledAutoCompleteSelect
 			onChange={(_event, newValue) => {
 				if (newValue !== null) props.onChange?.call(null, newValue);
 			}}
@@ -37,6 +37,7 @@ export function ObjectSelectProperty(props: ObjectSelectProps) {
 			groupBy={groups ? option => groups[option.uuid] ?? '' : undefined}
 			getOptionLabel={option => option.label || ''}
 			isOptionEqualToValue={(option, value) => option.uuid === value.uuid}
+			ariaLabel={props.ariaLabel}
 		/>
 	);
 }

@@ -1,8 +1,8 @@
 import { SyntheticEvent } from 'react';
 
-import { AutoCompleteSelect } from '../../../util/genericComponents/AutoCompleteSelect';
 import { COMMON_MATERIAL_ICRUS } from '../../Simulation/Materials/materials';
 import SimulationMaterial from '../../Simulation/Materials/SimulationMaterial';
+import { LabelledAutoCompleteSelect } from '../Sidebar/properties/fields/PropertyField';
 
 export interface MaterialSelectProps {
 	onChange?: (event: SyntheticEvent<Element, Event>, newValue: number) => void;
@@ -28,7 +28,7 @@ export function MaterialSelect(props: MaterialSelectProps) {
 	};
 
 	return (
-		<AutoCompleteSelect
+		<LabelledAutoCompleteSelect
 			onChange={(event, newValue) => {
 				if (newValue !== null) props.onChange?.call(null, event, newValue.icru);
 			}}

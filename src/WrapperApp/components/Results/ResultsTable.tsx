@@ -115,6 +115,7 @@ export default function TablePage0D(props: { estimator: EstimatorResults }) {
 					checked={isUnitFixed}
 					onChange={handleChangeUnitFixed}
 					color='primary'
+					slotProps={{ input: { 'aria-label': 'Fixed unit' } }}
 				/>
 				<Typography>Fixed</Typography>
 			</Stack>
