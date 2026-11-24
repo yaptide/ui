@@ -95,16 +95,13 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 				idx={21}
 				openIdx={openIdx}
 				setOpenIdx={setOpenIdx}
-				options={[
-					...(editor
-						? Object.entries(getAddElementButtonProps(editor))
-								.filter(
-									([key, val]) =>
-										key !== 'Special Components' && key !== 'Filters'
-								)
-								.map(([key, val]) => val)
-						: [])
-				]}
+				options={
+					editor
+						? Object.values(getAddElementButtonProps(editor)).filter(
+								group => group.length > 0
+							)
+						: []
+				}
 			/>
 			<MenuPosition
 				label='Edit'

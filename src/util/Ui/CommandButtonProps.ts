@@ -173,7 +173,7 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 		// @ts-ignore
 		case SimulatorType.SHIELDHIT:
 			filtersTuple.push([
-				'Custom filter',
+				'Custom Filter',
 				() => {
 					return commandFactory.createAddCommand<'filter', ScoringFilter>(
 						'filter',
@@ -186,7 +186,7 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 		case SimulatorType.FLUKA:
 		case SimulatorType.COMMON:
 			filtersTuple.push([
-				'Particle filter',
+				'Particle Filter',
 				() => {
 					return commandFactory.createAddCommand<'filter', ScoringFilter>(
 						'filter',
@@ -199,7 +199,7 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 			break;
 		case SimulatorType.GEANT4:
 			filtersTuple.push([
-				'New filter',
+				'Filter',
 				() => {
 					return commandFactory.createAddCommand<'filter', ScoringFilter>(
 						'filter',
@@ -248,14 +248,17 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 	];
 
 	const isNested = editor.contextManager.currentSimulator === SimulatorType.GEANT4;
+	const hasSpecialComponents = editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT;
 
 	return {
 		'Figures': isNested
 			? createCommandButtonProps(editor, nestedFiguresTuple)
 			: createCommandButtonProps(editor, cfgFiguresTuple),
-		'Zones': createCommandButtonProps(editor, zonesTuple),
+		'Zones': isNested ? [] : createCommandButtonProps(editor, zonesTuple),
 		'Detectors': createCommandButtonProps(editor, detectorsTuple),
-		'Special Components': createCommandButtonProps(editor, specialComponentsTuple),
+		'Special Components': hasSpecialComponents
+			? createCommandButtonProps(editor, specialComponentsTuple)
+			: [],
 		'Filters': createCommandButtonProps(editor, filtersTuple),
 		'Outputs': createCommandButtonProps(editor, outputsTuple)
 	};
