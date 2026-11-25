@@ -59,7 +59,7 @@ export const SimulationCardActions = ({
 		if (currentJobStatusData[StatusState.COMPLETED](simulationStatus)) {
 			statusAction = (
 				<Button
-					sx={{ fontSize: '.8em' }}
+					sx={{ fontSize: '.8em', color: 'secondary.light' }}
 					size='small'
 					color='secondary'
 					disabled={!Boolean(loadResults)}
@@ -76,7 +76,7 @@ export const SimulationCardActions = ({
 		) {
 			statusAction = (
 				<Button
-					sx={{ fontSize: '.8em' }}
+					sx={{ fontSize: '.8em', color: 'secondary.light' }}
 					color='secondary'
 					onClick={() => handleCancel(simulationStatus.jobId)}
 					size='small'>
@@ -86,7 +86,7 @@ export const SimulationCardActions = ({
 		} else if (currentJobStatusData[StatusState.FAILED](simulationStatus)) {
 			statusAction = (
 				<Button
-					sx={{ fontSize: '.8em' }}
+					sx={{ fontSize: '.8em', color: 'secondary.light' }}
 					color='secondary'
 					size='small'
 					onClick={() => onClickShowError(simulationStatus)}>
@@ -103,8 +103,9 @@ export const SimulationCardActions = ({
 				aria-label='full width outlined button group'>
 				{statusAction}
 				<Button
-					sx={{ fontSize: '.8em' }}
+					sx={{ fontSize: '.8em', color: 'secondary.light' }}
 					color='secondary'
+					variant='outlined'
 					size='small'
 					onClick={onClickInputFiles}
 					disabled={!Boolean(showInputFiles)}>
@@ -112,8 +113,9 @@ export const SimulationCardActions = ({
 				</Button>
 
 				<Button
-					sx={{ fontSize: '.8em' }}
+					sx={{ fontSize: '.8em', color: 'secondary.light' }}
 					color='secondary'
+					variant='outlined'
 					size='small'
 					onClick={onClickSaveToFile}
 					disabled={
@@ -123,8 +125,9 @@ export const SimulationCardActions = ({
 				</Button>
 
 				<Button
-					sx={{ fontSize: '.8em' }}
 					color='secondary'
+					sx={{ fontSize: '.8em', color: 'secondary.light' }}
+					variant='outlined'
 					size='small'
 					disabled={disableLoadJson}
 					onClick={() => simulationStatus && onClickLoadToEditor(simulationStatus)}>

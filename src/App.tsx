@@ -75,13 +75,27 @@ function App() {
 						default: prefersDarkMode ? '#101010' : '#ddd'
 					},
 					primary: {
-						main: '#248c5e'
+						main: '#218055',
+						light: prefersDarkMode ? '#2EB376' : '#1E734C'
 					},
 					secondary: {
-						main: prefersDarkMode ? '#b098da' : '#8261c3'
+						main: prefersDarkMode ? '#8A60B3' : '#8261c3',
+						light: prefersDarkMode ? '#C4A9F2' : '#674D99'
 					},
 					accordion: {
 						main: prefersDarkMode ? '#343434' : '#e9e9e9'
+					},
+					error: {
+						main: prefersDarkMode ? '#D32F2F' : '#D32F2F',
+						light: prefersDarkMode ? '#F23636' : '#B32828'
+					},
+					success: {
+						main: prefersDarkMode ? '#308033' : '#1E824E',
+						light: prefersDarkMode ? '#3EA642' : '#1B7345'
+					},
+					info: {
+						main: prefersDarkMode ? '#0174B3' : '#0B5FA5',
+						light: prefersDarkMode ? '#0288D1' : '#0A5899'
 					}
 				},
 				typography: {

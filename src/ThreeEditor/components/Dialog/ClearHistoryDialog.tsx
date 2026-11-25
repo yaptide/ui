@@ -16,6 +16,7 @@ export function ClearHistoryDialog({
 			<Button
 				onClick={onClose}
 				color='secondary'
+				sx={{ color: 'secondary.light' }}
 				autoFocus>
 				Cancel
 			</Button>

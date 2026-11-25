@@ -118,7 +118,7 @@ export default function SimulatorControls(props: SimulationControlsProps) {
 				id='simulator-controls-status'
 				sx={{
 					userSelect: 'none',
-					color: simulatorReady ? 'primary.main' : theme.palette.grey['600']
+					color: simulatorReady ? 'primary.light' : theme.palette.grey['600']
 				}}>
 				{simulatorReady
 					? 'Connected'

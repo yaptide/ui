@@ -46,6 +46,7 @@ export function LoadFileDialog({
 				aria-label='cancel'
 				onClick={onClose}
 				color='secondary'
+				sx={{ color: 'secondary.light' }}
 				autoFocus>
 				Cancel
 			</Button>
