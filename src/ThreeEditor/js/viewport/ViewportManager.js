@@ -712,11 +712,17 @@ function ViewManager(editor) {
 			);
 		}
 
+		// `geometryOnly` exports just the simulation geometry: on top of hiding the grid, selection
+		// box and editor helpers it also drops everything in `sceneHelpers` (the beam, the world-zone
+		// boundary and the plane/camera/light helpers).
+		const geometryOnly = options.geometryOnly ?? false;
+
 		targetViewport.drawInto(outputContext, width, height, renderer, {
 			skipViewHelpers: true,
-			hideGrid: options.hideGrid ?? true,
-			hideSelectionBox: options.hideHelpers ?? true,
-			hideEditorHelpers: options.hideHelpers ?? true
+			skipSceneHelpers: geometryOnly,
+			hideGrid: geometryOnly || (options.hideGrid ?? true),
+			hideSelectionBox: geometryOnly || (options.hideHelpers ?? true),
+			hideEditorHelpers: geometryOnly || (options.hideHelpers ?? true)
 		});
 
 		const format = options.format ?? 'image/png';

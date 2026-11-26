@@ -134,4 +134,54 @@ describe('View menu - Export view as PNG', () => {
 		).toBe(true);
 		expect(await driver.getCurrentUrl()).not.toContain('?');
 	}, 60_000);
+
+	test('defaults to object-only export and disables the grid/helpers switches', async () => {
+		await driver.get('http://localhost:3000');
+
+		// Open the Editor screen
+		await driver.wait(until.elementLocated(By.xpath("//div[@aria-label = 'Editor']")), 10_000);
+		const editorButton = await driver.findElement(By.xpath("//div[@aria-label = 'Editor']"));
+		await driver.wait(until.elementIsEnabled(editorButton), 10_000);
+		await editorButton.click();
+
+		// View > Export view as PNG…
+		const viewMenuButton = await driver.wait(
+			until.elementLocated(By.xpath("//button[@data-testid = 'menu-view']")),
+			10_000
+		);
+		await viewMenuButton.click();
+		await driver.sleep(1000);
+
+		const exportOption = await driver.wait(
+			until.elementLocated(By.xpath("//li[@data-testid = 'export-image']")),
+			10_000
+		);
+		await exportOption.click();
+
+		const dialog = await driver.wait(
+			until.elementLocated(By.xpath("//div[@role = 'dialog' or @role = 'alertdialog']")),
+			10_000
+		);
+		await driver.wait(until.elementIsVisible(dialog), 10_000);
+
+		const labelByText = (text: string) =>
+			dialog.findElement(By.xpath(`.//label[.//*[contains(text(), '${text}')]]`));
+
+		const checkboxInputByLabel = async (text: string) =>
+			(await labelByText(text)).findElement(By.css("input[type='checkbox']"));
+
+		const objectOnly = await checkboxInputByLabel('Only simulation geometry');
+		const grid = await checkboxInputByLabel('Include grid');
+		const helpers = await checkboxInputByLabel('Include helper objects');
+
+		// Object-only is the base export, so the grid/helpers switches start disabled.
+		expect(await objectOnly.isSelected()).toBe(true);
+		expect(await grid.isEnabled()).toBe(false);
+		expect(await helpers.isEnabled()).toBe(false);
+
+		// Turning it off makes the grid/helpers switches available again.
+		await (await labelByText('Only simulation geometry')).click();
+		await driver.wait(async () => await grid.isEnabled(), 5_000);
+		expect(await helpers.isEnabled()).toBe(true);
+	}, 60_000);
 });

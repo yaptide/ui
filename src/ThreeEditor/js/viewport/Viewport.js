@@ -173,6 +173,7 @@ export function Viewport(
 	function drawInto(targetContext, width, height, renderer, options = {}) {
 		const {
 			skipViewHelpers = false,
+			skipSceneHelpers = false,
 			hideGrid = false,
 			hideSelectionBox = false,
 			hideEditorHelpers = false
@@ -217,9 +218,12 @@ export function Viewport(
 			if (hideEditorHelpers)
 				editorHelpersVisibility.forEach(([helper]) => (helper.visible = false));
 
-			callWithHidden(viewClipPlane?.planeHelper, () => {
-				renderer.render(sceneHelpers, camera);
-			});
+			// `sceneHelpers` holds every helper overlay (beam, world-zone boundary, plane/camera/light
+			// helpers). The object-only export skips it entirely, keeping just the simulation geometry.
+			if (!skipSceneHelpers)
+				callWithHidden(viewClipPlane?.planeHelper, () => {
+					renderer.render(sceneHelpers, camera);
+				});
 
 			if (!skipViewHelpers) {
 				renderer.render(sceneViewHelpers, camera);

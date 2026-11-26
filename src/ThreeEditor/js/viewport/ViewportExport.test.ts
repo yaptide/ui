@@ -1,5 +1,6 @@
 import type { CanvasLike, ExportImageErrorCode } from './ViewportExport';
 import {
+	buildExportImageOptions,
 	buildPngFilename,
 	canvasToBlob,
 	clampExportSize,
@@ -172,5 +173,36 @@ describe('sanitizeExportFileName', () => {
 		expect(sanitizeExportFileName('   ', date)).toBe('yaptide-view-20260304-050607.png');
 		expect(sanitizeExportFileName('///', date)).toBe('yaptide-view-20260304-050607.png');
 		expect(sanitizeExportFileName('.png', date)).toBe('yaptide-view-20260304-050607.png');
+	});
+});
+
+describe('buildExportImageOptions', () => {
+	test('object-only wins over the grid/helpers switches', () => {
+		expect(
+			buildExportImageOptions({ includeGrid: true, includeHelpers: true, geometryOnly: true })
+		).toEqual({ geometryOnly: true, hideGrid: true, hideHelpers: true, format: 'image/png' });
+	});
+
+	test('maps the grid/helpers switches when object-only is off', () => {
+		expect(
+			buildExportImageOptions({
+				includeGrid: false,
+				includeHelpers: false,
+				geometryOnly: false
+			})
+		).toEqual({ geometryOnly: false, hideGrid: true, hideHelpers: true, format: 'image/png' });
+
+		expect(
+			buildExportImageOptions({
+				includeGrid: true,
+				includeHelpers: true,
+				geometryOnly: false
+			})
+		).toEqual({
+			geometryOnly: false,
+			hideGrid: false,
+			hideHelpers: false,
+			format: 'image/png'
+		});
 	});
 });

@@ -5,6 +5,7 @@ import { ChangeEvent, FormEvent, useState } from 'react';
 import { StoreContext } from '../../../services/StoreService';
 import { saveBlob } from '../../../util/File';
 import {
+	buildExportImageOptions,
 	buildPngFilename,
 	sanitizeExportFileName,
 	viewNameToToken
@@ -20,6 +21,7 @@ export function ExportImageDialog({
 			viewNameToToken(yaptideEditor?.viewManager?.getActiveViewportName() ?? 'ViewPanel')
 		)
 	);
+	const [geometryOnly, setGeometryOnly] = useState(true);
 	const [includeGrid, setIncludeGrid] = useState(false);
 	const [includeHelpers, setIncludeHelpers] = useState(false);
 	const [isExporting, setIsExporting] = useState(false);
@@ -34,11 +36,10 @@ export function ExportImageDialog({
 		setIsExporting(true);
 
 		try {
-			const result = await yaptideEditor.viewManager.exportViewImage('active', {
-				hideGrid: !includeGrid,
-				hideHelpers: !includeHelpers,
-				format: 'image/png'
-			});
+			const result = await yaptideEditor.viewManager.exportViewImage(
+				'active',
+				buildExportImageOptions({ includeGrid, includeHelpers, geometryOnly })
+			);
 
 			saveBlob(result.blob, sanitizeExportFileName(fileName));
 			enqueueSnackbar('View exported as PNG.', { variant: 'success' });
@@ -79,7 +80,21 @@ export function ExportImageDialog({
 						onChange={changeFileName}
 					/>
 					<FormControlLabel
+						label='Only simulation geometry (no grid, beam or helper overlays)'
+						sx={{
+							'&.MuiFormControlLabel-root': { paddingLeft: 1 },
+							'userSelect': 'none'
+						}}
+						control={
+							<Checkbox
+								checked={geometryOnly}
+								onChange={(_, checked) => setGeometryOnly(checked)}
+							/>
+						}
+					/>
+					<FormControlLabel
 						label='Include grid'
+						disabled={geometryOnly}
 						sx={{
 							'&.MuiFormControlLabel-root': { paddingLeft: 1 },
 							'userSelect': 'none'
@@ -87,12 +102,14 @@ export function ExportImageDialog({
 						control={
 							<Checkbox
 								checked={includeGrid}
+								disabled={geometryOnly}
 								onChange={(_, checked) => setIncludeGrid(checked)}
 							/>
 						}
 					/>
 					<FormControlLabel
 						label='Include helper objects (lights, cameras, selection)'
+						disabled={geometryOnly}
 						sx={{
 							'&.MuiFormControlLabel-root': { paddingLeft: 1 },
 							'userSelect': 'none'
@@ -100,6 +117,7 @@ export function ExportImageDialog({
 						control={
 							<Checkbox
 								checked={includeHelpers}
+								disabled={geometryOnly}
 								onChange={(_, checked) => setIncludeHelpers(checked)}
 							/>
 						}

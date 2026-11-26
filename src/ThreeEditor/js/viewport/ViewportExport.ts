@@ -11,6 +11,13 @@ export interface ExportImageOptions {
 	hideGrid?: boolean;
 	/** Hide gizmo, axes, selection box and camera/light helpers. Defaults to `true`. */
 	hideHelpers?: boolean;
+	/**
+	 * Export only the simulation geometry, dropping every helper overlay: the grid, the selection
+	 * box, the corner/view gizmos and everything in `sceneHelpers` (the beam, the world-zone
+	 * boundary and the plane/camera/light helpers). Detector, zone and figure geometry is kept.
+	 * When `true`, `hideGrid` and `hideHelpers` are ignored. Defaults to `false`.
+	 */
+	geometryOnly?: boolean;
 	/** Output mime type. The MVP UI only offers `image/png`. */
 	format?: ExportImageFormat;
 	/** JPEG quality in the 0..1 range. Ignored for PNG. Defaults to `0.92`. */
@@ -212,4 +219,31 @@ export function sanitizeExportFileName(value: string, date: Date = new Date()): 
 	const sanitized = withoutExtension.replace(ILLEGAL_FILENAME_CHARACTERS, '').trim();
 
 	return sanitized.length > 0 ? `${sanitized}.png` : buildPngFilename('view', date);
+}
+
+export interface ExportImageSelection {
+	includeGrid: boolean;
+	includeHelpers: boolean;
+	geometryOnly: boolean;
+}
+
+/**
+ * Translates the export dialog checkboxes into {@link ExportImageOptions}. The object-only switch
+ * wins over the grid/helpers switches: such an export never draws the grid or any helper.
+ */
+export function buildExportImageOptions({
+	includeGrid,
+	includeHelpers,
+	geometryOnly
+}: ExportImageSelection): ExportImageOptions {
+	if (geometryOnly) {
+		return { geometryOnly: true, hideGrid: true, hideHelpers: true, format: 'image/png' };
+	}
+
+	return {
+		geometryOnly: false,
+		hideGrid: !includeGrid,
+		hideHelpers: !includeHelpers,
+		format: 'image/png'
+	};
 }
