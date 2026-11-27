@@ -12,7 +12,7 @@ import { FullSimulationData } from '../../../../types/SimulationService';
 interface SimulationCardHelpersProps {
 	loadResults: ((jobId: string | null) => void) | undefined;
 	setDisableLoadJson: React.Dispatch<React.SetStateAction<boolean>>;
-	showInputFiles: ((inputFiles?: SimulationInputFiles | undefined) => void) | undefined;
+	showInputFiles: ((inputFiles?: SimulationInputFiles, title?: string) => void) | undefined;
 	simulationStatus: JobStatusData;
 	yaptideEditor: YaptideEditor | undefined;
 }
@@ -64,7 +64,7 @@ const SimulationCardHelpers = ({
 	const onClickInputFiles = async () => {
 		const inputFiles = await getJobInputs(simulationStatus);
 
-		showInputFiles?.call(null, inputFiles?.input.inputFiles);
+		showInputFiles?.call(null, inputFiles?.input.inputFiles, simulationStatus.title);
 	};
 
 	const onClickShowError = async (simulation: JobStatusData<StatusState.FAILED>) => {

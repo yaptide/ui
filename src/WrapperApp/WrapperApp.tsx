@@ -13,7 +13,6 @@ import { EditorToolbar } from '../ThreeEditor/components/Editor/EditorToolbar';
 import SceneEditor from '../ThreeEditor/components/Editor/SceneEditor';
 import { EditorSidebar } from '../ThreeEditor/components/Sidebar/EditorSidebar';
 import { SimulationFetchSource, SimulatorType } from '../types/RequestTypes';
-import { SimulationInputFiles } from '../types/ResponseTypes';
 import { FullSimulationData } from '../types/SimulationService';
 import { camelCaseToNormalText } from '../util/camelCaseToSentenceCase';
 import HeaderPanel from './components/Header/HeaderPanel';
@@ -26,6 +25,7 @@ import { ExamplePanel } from './components/Panels/ExamplePanel';
 import { TabPanel } from './components/Panels/TabPanel';
 import ResultsPanel from './components/Results/ResultsPanel';
 import { Geant4DatasetsType } from './components/Simulation/Geant4DatasetDownload';
+import { RunSimulationFunctionType } from './components/Simulation/RunSimulationForm';
 import RunSimulationPanel from './components/Simulation/RunSimulationPanel';
 import SimulationPanel from './components/Simulation/SimulationPanel';
 import { useRunGeant4LocalWorkerSimulation } from './UseRunGeant4LocalWorkerSimulation';
@@ -89,21 +89,6 @@ function WrapperApp() {
 		);
 	}, [auth, demoMode]);
 
-	const [providedInputFiles, setProvidedInputFiles] = useState<SimulationInputFiles>();
-	const [highlightRunForm, setHighLightRunForm] = useState(false);
-
-	useEffect(() => {
-		if (Object.keys(providedInputFiles ?? {}).length > 0) {
-			setHighLightRunForm(true);
-			const timeout = setTimeout(() => setHighLightRunForm(false), 2500);
-
-			return () => {
-				clearTimeout(timeout);
-				setHighLightRunForm(false);
-			};
-		}
-	}, [providedInputFiles]);
-
 	const handleChange = (event: SyntheticEvent, newValue: string) => {
 		if (newValue === 'login' && isAuthorized) logout();
 		setTabsValue(newValue);
@@ -142,10 +127,15 @@ function WrapperApp() {
 
 	const runRemoteWorkerSimulation = useRunRemoteWorkerSimulation();
 	const runGeant4LocalWorkerSimulation = useRunGeant4LocalWorkerSimulation();
-	const runSimulation =
-		yaptideEditor?.contextManager.currentSimulator === SimulatorType.GEANT4
-			? runGeant4LocalWorkerSimulation
-			: runRemoteWorkerSimulation;
+	const runSimulation: RunSimulationFunctionType = (...args) => {
+		const [, , , , , , simulator] = args;
+
+		return (
+			simulator === SimulatorType.GEANT4
+				? runGeant4LocalWorkerSimulation
+				: runRemoteWorkerSimulation
+		)(...args);
+	};
 
 	const [geant4DatasetType, setGeant4DatasetType] = useState<Geant4DatasetsType>(
 		Geant4DatasetsType.FULL
@@ -294,9 +284,6 @@ function WrapperApp() {
 					}}
 					forTabs={['simulations']}>
 					<SimulationPanel
-						goToRun={(inputFiles?: SimulationInputFiles) => {
-							setProvidedInputFiles(inputFiles);
-						}}
 						source={simulationPanelPresentedSimulationsSource}
 						setSource={setSimulationPanelPresentedSimulationsSource}
 					/>
@@ -313,12 +300,10 @@ function WrapperApp() {
 							md: 'header-start / content-end'
 						}
 					}}
-					forTabs={['simulations', 'inputFiles', 'results']}>
+					forTabs={['simulations', 'inputFiles', 'results']}
+					persistentIfVisited>
 					<RunSimulationPanel
 						editorJson={yaptideEditor?.toSerialized()}
-						inputFiles={providedInputFiles}
-						highlight={highlightRunForm}
-						clearInputFiles={() => setProvidedInputFiles(undefined)}
 						runSimulation={runSimulation}
 						setSource={setSimulationPanelPresentedSimulationsSource}
 						geant4DatasetType={geant4DatasetType}
@@ -335,11 +320,7 @@ function WrapperApp() {
 					}}
 					forTabs={['inputFiles']}
 					persistentIfVisited>
-					<InputEditorPanel
-						goToRun={(inputFiles?: SimulationInputFiles) => {
-							setProvidedInputFiles(inputFiles);
-						}}
-					/>
+					<InputEditorPanel />
 				</TabPanel>
 				{/* end Input files screen */}
 

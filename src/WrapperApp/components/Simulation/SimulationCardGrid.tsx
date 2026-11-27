@@ -13,7 +13,7 @@ import {
 type SimulationCardGridProps = {
 	simulations?: JobStatusData[];
 	handleLoadResults?: (taskId: string | null, simulation: SimulationInfo) => void;
-	handleShowInputFiles?: (inputFiles?: SimulationInputFiles) => void;
+	handleShowInputFiles?: (inputFiles?: SimulationInputFiles, title?: string) => void;
 	handleDelete?: (jobId: string) => void;
 	handleCancel?: (jobId: string) => void;
 	handleRefresh?: (jobId: string) => void;

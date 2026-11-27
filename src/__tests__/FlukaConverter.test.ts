@@ -149,7 +149,12 @@ describe('Fluka Converter', () => {
 		//wait until the text has appeared in the first text field
 		await driver.wait(
 			until.elementTextMatches(
-				driver.findElement(By.xpath("//textarea[@aria-label = 'fl_sim.inp text field']")),
+				await driver.wait(
+					until.elementLocated(
+						By.xpath("//textarea[@aria-label = 'fl_sim.inp text field']")
+					),
+					15_000
+				),
 				/\S/
 			)
 		);
