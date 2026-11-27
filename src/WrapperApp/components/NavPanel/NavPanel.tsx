@@ -17,8 +17,6 @@ import { useMenuOptions } from './useMenuOptions';
 type NavPanelProps = {
 	handleChange: (event: SyntheticEvent, value: string) => void;
 	tabsValue: string;
-	open: boolean;
-	setOpen: (open: boolean) => void;
 };
 
 function Title() {
