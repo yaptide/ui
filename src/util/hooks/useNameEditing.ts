@@ -10,12 +10,18 @@ export const useNameEditing = (
 	name: string,
 	onFinish?: () => void
 ) => {
-	const [draft, setDraft] = useState<string | null>(null);
+	const [draft, setDraft] = useState<{ object: Object3D; value: string } | null>(null);
 	const cancelledRef = useRef(false);
+	const draftValue = draft?.object === object ? draft.value : null;
 
 	const onBlur = () => {
-		if (!cancelledRef.current && draft !== null && draft.trim() !== '' && draft !== name)
-			editor.execute(new SetValueCommand(editor, object, 'name', draft));
+		const newName = draftValue?.trim();
+
+		if (!cancelledRef.current && newName) {
+			const command = new SetValueCommand(editor, object, 'name', newName);
+
+			if (command.newValue !== name) editor.execute(command);
+		}
 
 		cancelledRef.current = false;
 		setDraft(null);
@@ -32,8 +38,8 @@ export const useNameEditing = (
 	};
 
 	return {
-		value: draft ?? name,
-		onChange: (value: string) => setDraft(value),
+		value: draftValue ?? name,
+		onChange: (value: string) => setDraft({ object, value }),
 		onBlur,
 		onKeyDown
 	};
