@@ -4,6 +4,15 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
 
 import { UIDiv, UIPanel } from '../libs/ui.js';
 import { Viewport } from './Viewport.js';
+import {
+	canvasToBlob,
+	clampExportSize,
+	ExportImageError,
+	getMaxExportSide,
+	MAX_EXPORT_AREA,
+	MAX_EXPORT_SIDE,
+	resolveActiveViewportName
+} from './ViewportExport';
 
 // Part of code from https://github.com/mrdoob/three.js/blob/r131/editor/js/Viewport.js, file was split to add multiple viewports
 
@@ -636,6 +645,96 @@ function ViewManager(editor) {
 		}
 
 		render();
+	};
+
+	// viewport access & image export
+
+	this.getViewportNames = () => Object.keys(viewportMap);
+
+	this.hasViewport = name => Object.prototype.hasOwnProperty.call(viewportMap, name);
+
+	// 'fourViews' shows the perspective 3D view in the top-right pane, 'singleView' shows it alone
+	this.getActiveViewportName = () => resolveActiveViewportName(currentLayout);
+
+	/**
+	 * Exports a single viewport as an image (MVP: opaque PNG, native 1x resolution).
+	 * @param {string} [name] viewport name or 'active'
+	 * @param {import('./ViewportExport').ExportImageOptions} [options]
+	 * @param {import('./ViewportExport').ViewportRenderStrategy} [strategy]
+	 * @returns {Promise<import('./ViewportExport').ExportImageResult>}
+	 */
+	this.exportViewImage = async (name = 'active', options = {}, strategy = 'sharedResize') => {
+		if (strategy !== 'sharedResize') {
+			throw new ExportImageError(
+				'unknown-strategy',
+				`Unsupported export strategy: "${strategy}".`
+			);
+		}
+
+		const resolvedName = name === 'active' ? this.getActiveViewportName() : name;
+		const targetViewport = viewportMap[resolvedName];
+
+		if (!targetViewport) {
+			throw new ExportImageError('unknown-view', `Unknown viewport: "${resolvedName}".`);
+		}
+
+		if (!renderer) {
+			throw new ExportImageError('encode-failed', 'The renderer is not ready yet.');
+		}
+
+		const width = targetViewport.canvas.width;
+		const height = targetViewport.canvas.height;
+
+		const gl = renderer.getContext();
+		const maxTextureSize = gl ? gl.getParameter(gl.MAX_TEXTURE_SIZE) : MAX_EXPORT_SIDE;
+		const maxSide = getMaxExportSide(maxTextureSize);
+		const exportSize = clampExportSize(width, height, maxSide);
+
+		// The MVP cannot render at a scaled buffer size, so an oversized viewport is a hard error
+		if (exportSize.width !== width || exportSize.height !== height) {
+			throw new ExportImageError(
+				'canvas-limit',
+				`The viewport (${width}x${height}px) is too large to export at full resolution. ` +
+					`The maximum supported size is ${maxSide}px per side and ${MAX_EXPORT_AREA}px in total.`
+			);
+		}
+
+		const outputCanvas = document.createElement('canvas');
+		outputCanvas.width = width;
+		outputCanvas.height = height;
+
+		const outputContext = outputCanvas.getContext('2d');
+
+		if (!outputContext) {
+			throw new ExportImageError(
+				'encode-failed',
+				'Could not create a 2D context for the export.'
+			);
+		}
+
+		// `geometryOnly` exports just the simulation geometry: on top of hiding the grid, selection
+		// box and editor helpers it also drops everything in `sceneHelpers` (the beam, the world-zone
+		// boundary and the plane/camera/light helpers).
+		const geometryOnly = options.geometryOnly ?? false;
+
+		targetViewport.drawInto(outputContext, width, height, renderer, {
+			skipViewHelpers: true,
+			skipSceneHelpers: geometryOnly,
+			hideGrid: geometryOnly || (options.hideGrid ?? true),
+			hideSelectionBox: geometryOnly || (options.hideHelpers ?? true),
+			hideEditorHelpers: geometryOnly || (options.hideHelpers ?? true)
+		});
+
+		const format = options.format ?? 'image/png';
+		const blob = await canvasToBlob(outputCanvas, format, options.quality);
+
+		return {
+			blob,
+			width,
+			height,
+			viewName: resolvedName,
+			canvas: outputCanvas
+		};
 	};
 
 	return {

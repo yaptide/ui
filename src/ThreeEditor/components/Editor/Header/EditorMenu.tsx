@@ -23,6 +23,7 @@ type EditorMenuProps = {
 
 export function EditorMenu({ editor }: EditorMenuProps) {
 	const { open: openClearHistory } = useDialog('clearHistory');
+	const { open: openExportImage } = useDialog('exportImage');
 	const [openIdx, setOpenIdx] = useState(-1);
 	const { yaptideEditor } = useStore();
 	const [selected, setSelectedObject] = useState<Object3D | null>(editor?.selected ?? null);
@@ -54,6 +55,7 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 		<>
 			<MenuPosition
 				label='View'
+				name='view'
 				idx={20} // arbitrary, larger than id for 'Project' menu
 				openIdx={openIdx}
 				setOpenIdx={setOpenIdx}
@@ -61,12 +63,14 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 					[
 						{
 							label: 'Toggle Fullscreen',
+							name: 'toggle-fullscreen',
 							onClick: () => {
 								toggleFullscreen();
 							}
 						},
 						{
 							label: 'Reset Camera',
+							name: 'reset-camera',
 							onClick: () => {
 								editor?.resetCamera();
 							}
@@ -74,7 +78,16 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 					],
 					[
 						{
+							label: 'Export view as PNG…',
+							name: 'export-image',
+							onClick: () => editor && openExportImage({ yaptideEditor: editor }),
+							disabled: !editor
+						}
+					],
+					[
+						{
 							label: 'Simple View',
+							name: 'simple-view',
 							onClick: () => {
 								editor?.signals.layoutChanged.dispatch('singleView');
 							},
@@ -82,6 +95,7 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 						},
 						{
 							label: 'Split View',
+							name: 'split-view',
 							onClick: () => {
 								editor?.signals.layoutChanged.dispatch('fourViews');
 							},

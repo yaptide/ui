@@ -167,10 +167,17 @@ export function Viewport(
 
 	let cachedRenderer = null;
 
-	function render(renderer = cachedRenderer) {
-		if (!config.visible) return;
-
-		cachedRenderer = renderer;
+	// Draws the current scene state into an arbitrary 2D context. Used by the on-screen `render()`
+	// (with every helper shown) and by the export path (with selected helpers optionally hidden).
+	// This intentionally ignores `config.visible` so an invisible viewport can still be exported.
+	function drawInto(targetContext, width, height, renderer, options = {}) {
+		const {
+			skipViewHelpers = false,
+			skipSceneHelpers = false,
+			hideGrid = false,
+			hideSelectionBox = false,
+			hideEditorHelpers = false
+		} = options;
 
 		if (!renderer) return;
 
@@ -178,7 +185,7 @@ export function Viewport(
 		// by default grid plane lies within XZ plane
 		grid.rotation.copy(gridRotation ?? new THREE.Euler(0, 0, 0));
 
-		renderer.setSize(canvas.width, canvas.height);
+		renderer.setSize(width, height);
 
 		renderer.autoClear = false;
 
@@ -197,17 +204,50 @@ export function Viewport(
 
 		planeHelpers.visible = showPlaneHelpers;
 
-		callWithHidden(viewClipPlane?.planeHelper, () => {
-			renderer.render(sceneHelpers, camera);
-		});
+		const gridVisibility = grid.visible;
+		const selectionBoxVisibility = selectionBox.visible;
+		const editorHelpersVisibility = hideEditorHelpers
+			? Object.values(editor.helpers).map(helper => [helper, helper.visible])
+			: [];
 
-		renderer.render(sceneViewHelpers, camera);
+		try {
+			if (hideGrid) grid.visible = false;
 
-		viewHelper.render(renderer);
+			if (hideSelectionBox) selectionBox.visible = false;
 
-		renderer.autoClear = true;
+			if (hideEditorHelpers)
+				editorHelpersVisibility.forEach(([helper]) => (helper.visible = false));
 
-		context.drawImage(renderer.domElement, 0, 0);
+			// `sceneHelpers` holds every helper overlay (beam, world-zone boundary, plane/camera/light
+			// helpers). The object-only export skips it entirely, keeping just the simulation geometry.
+			if (!skipSceneHelpers)
+				callWithHidden(viewClipPlane?.planeHelper, () => {
+					renderer.render(sceneHelpers, camera);
+				});
+
+			if (!skipViewHelpers) {
+				renderer.render(sceneViewHelpers, camera);
+
+				viewHelper.render(renderer);
+			}
+		} finally {
+			grid.visible = gridVisibility;
+			selectionBox.visible = selectionBoxVisibility;
+			editorHelpersVisibility.forEach(([helper, visible]) => (helper.visible = visible));
+			renderer.autoClear = true;
+		}
+
+		targetContext.drawImage(renderer.domElement, 0, 0);
+	}
+
+	function render(renderer = cachedRenderer) {
+		if (!config.visible) return;
+
+		cachedRenderer = renderer;
+
+		if (!renderer) return;
+
+		drawInto(context, canvas.width, canvas.height, renderer);
 	}
 
 	function animate(delta) {
@@ -588,7 +628,9 @@ export function Viewport(
 	return {
 		...this,
 		render,
+		drawInto,
 		container,
+		canvas,
 		controls,
 		viewHelper,
 		animate,

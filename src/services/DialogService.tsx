@@ -3,6 +3,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { ChangeScoringTypeDialog } from '../ThreeEditor/components/Dialog/ChangeScoringTypeDialog';
 import { ClearHistoryDialog } from '../ThreeEditor/components/Dialog/ClearHistoryDialog';
 import { EditProjectInfoDialog } from '../ThreeEditor/components/Dialog/EditProjectInfoDialog';
+import { ExportImageDialog } from '../ThreeEditor/components/Dialog/ExportImageDialog';
 import { LoadFileDialog } from '../ThreeEditor/components/Dialog/LoadFileDialog';
 import { NewProjectDialog } from '../ThreeEditor/components/Dialog/NewProjectDialog';
 import { OpenFileDialog } from '../ThreeEditor/components/Dialog/OpenFileDialog';
@@ -45,7 +46,8 @@ export type DialogComponentTypeMap = EntriesToObj<
 		ValidComponentTypes<['changeScoringType', typeof ChangeScoringTypeDialog]>,
 		ValidComponentTypes<['simulatorChange', typeof SimulatorChangeDialog]>,
 		ValidComponentTypes<['datasetsFullDetailsInfo', typeof DatasetsFullInfoDialog]>,
-		ValidComponentTypes<['datasetsPartialDetailsInfo', typeof DatasetsPartialInfoDialog]>
+		ValidComponentTypes<['datasetsPartialDetailsInfo', typeof DatasetsPartialInfoDialog]>,
+		ValidComponentTypes<['exportImage', typeof ExportImageDialog]>
 	]
 >;
 
@@ -123,7 +125,8 @@ const DialogProvider = ({ children }: GenericContextProviderProps) => {
 			changeScoringType: ChangeScoringTypeDialog,
 			simulatorChange: SimulatorChangeDialog,
 			datasetsFullDetailsInfo: DatasetsFullInfoDialog,
-			datasetsPartialDetailsInfo: DatasetsPartialInfoDialog
+			datasetsPartialDetailsInfo: DatasetsPartialInfoDialog,
+			exportImage: ExportImageDialog
 		}),
 		[]
 	);

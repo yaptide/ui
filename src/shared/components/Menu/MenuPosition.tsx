@@ -10,6 +10,8 @@ type MenuPositionProps = {
 	openIdx: number;
 	setOpenIdx: (open: number) => void;
 	options: CommandButtonProps[][];
+	/** Optional stable id used for E2E selectors (`data-testid` on the button and menu). */
+	name?: string;
 };
 
 export default function MenuPosition({
@@ -17,7 +19,8 @@ export default function MenuPosition({
 	idx,
 	openIdx,
 	setOpenIdx,
-	options
+	options,
+	name
 }: MenuPositionProps) {
 	const theme = useTheme();
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -45,6 +48,7 @@ export default function MenuPosition({
 				variant='text'
 				sx={{ color: theme.palette.text.primary }}
 				id={'menu-button-' + idx.toString()}
+				data-testid={name ? `menu-${name}` : undefined}
 				aria-controls={Boolean(anchorEl) ? 'menu-content-' + idx.toString() : undefined}
 				aria-haspopup='true'
 				aria-expanded={Boolean(anchorEl) ? 'true' : undefined}
@@ -61,6 +65,7 @@ export default function MenuPosition({
 			</Button>
 			<Menu
 				id={'menu-content-' + idx.toString()}
+				data-testid={name ? `menu-${name}-content` : undefined}
 				anchorEl={anchorEl}
 				open={Boolean(anchorEl)}
 				onClose={() => handleClose()}
@@ -76,6 +81,7 @@ export default function MenuPosition({
 									minWidth: '120px'
 								}}
 								key={idx}
+								data-testid={option.name}
 								onClick={() => {
 									handleClose(option.onClick);
 								}}
