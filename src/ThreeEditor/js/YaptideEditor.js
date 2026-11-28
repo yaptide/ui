@@ -197,6 +197,14 @@ export function YaptideEditor(container) {
 	});
 	this.history = new _History(this);
 	this.storage = new _Storage();
+	// the hash of the input the editor was loaded from, kept until the first change: the loaded editor serialized
+	// again need not give the same hash, so this is how the results of a loaded simulation are found.
+	// An object, so the copies the store makes of the editor share it
+	this.loadedInput = { hash: undefined };
+	this.signals.historyChanged.add(() => {
+		this.loadedInput.hash = undefined;
+	});
+
 	this.unit = {
 		name: 'cm',
 		multiplier: 1
@@ -710,6 +718,7 @@ YaptideEditor.prototype = {
 			this.signals.cameraResetted.dispatch();
 			this.signals.sceneGraphChanged.dispatch();
 			this.signals.projectChanged.dispatch();
+			this.loadedInput.hash = json.hash;
 		} catch (e) {
 			console.error(e);
 			this.clear();

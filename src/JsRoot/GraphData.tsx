@@ -61,6 +61,7 @@ export type Estimator = {
 	name: string;
 	metadata?: unknown;
 	pages: Page[];
+	outputUuid?: string;
 	scoringOutputJsonRef?: ScoringOutputJSON;
 };
 
