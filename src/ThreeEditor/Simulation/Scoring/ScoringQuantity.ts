@@ -2,7 +2,7 @@ import { SimulatorType } from '../../../types/RequestTypes';
 import { SerializableState } from '../../js/EditorJson';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
-import { OverrideMap } from '../Base/SimulationZone';
+import { OverrideMap, SimulationZoneMaterialJSON } from '../Base/SimulationZone';
 import SimulationMaterial from '../Materials/SimulationMaterial';
 import { ScoringFilter } from './ScoringFilter';
 import { isOutput, ScoringOutput } from './ScoringOutput';
@@ -23,9 +23,8 @@ export type ScoringQuantityJSON = Omit<
 		medium?: Scoring.MEDIUM;
 		filter?: string;
 		modifiers?: DifferentialJSON[];
-		primaries?: number;
 		rescale?: number;
-	},
+	} & Partial<Omit<SimulationZoneMaterialJSON, 'visible'>>,
 	never
 >;
 
@@ -49,8 +48,6 @@ export class ScoringQuantity
 	keyword?: Scoring.SCORING_KEYWORD;
 	hasFilter?: boolean;
 	filter?: ScoringFilter;
-	hasPrimaries?: boolean;
-	primaries?: number;
 	hasRescale?: boolean;
 	rescale?: number;
 	selectedModifier?: DifferentialModifier | undefined;
@@ -139,6 +136,11 @@ export class ScoringQuantity
 	}
 
 	fromSerialized(json: ScoringQuantityJSON): this {
+		if ('primaries' in json)
+			console.warn(
+				`Quantity "${json.name}": the "primaries" option is no longer supported and was ignored.`
+			);
+
 		super.fromSerialized(json);
 		this._configurator.fromSerialized(json);
 

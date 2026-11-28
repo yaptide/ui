@@ -7,7 +7,6 @@ import MaterialConfigurationElement from './MaterialConfigurationElement';
 import MaterialPropertiesOverridesConfigurationElement from './MaterialPropertiesOverridesConfigurationElement';
 import MediumConfigurationElement from './MediumConfigurationElement';
 import ModifiersConfigurationElement from './ModifiersConfigurationElement';
-import PrimariesConfigurationElement from './PrimariesConfigurationElement';
 import RescaleConfigurationElement from './RescaleConfigurationElement';
 import { ScoringQuantityConfigurator } from './ScoringQuantityConfigurator';
 import SelectedModifierConfigurationElement from './SelectedModifierConfigurationElement';
@@ -48,7 +47,6 @@ export function applyShieldHitPreset(
 		'selectedModifier',
 		new SelectedModifierConfigurationElement(modifiersElement)
 	);
-	configurator.add('primaries', new PrimariesConfigurationElement(materialElement));
 }
 
 export function applyGeant4Preset(

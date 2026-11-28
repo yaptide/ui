@@ -103,14 +103,7 @@ export abstract class SimulationZone
 	}
 
 	private reconstructMaterialFromJSON(json: SimulationZoneJSON) {
-		const { materialUuid, customMaterial } = json;
-		const simulationMaterial = materialUuid
-			? this.editor.materialManager.getMaterialByUuid(
-					customMaterial && materialUuid === customMaterial.uuid
-						? customMaterial.originalMaterialUuid
-						: materialUuid
-				)
-			: this.editor.materialManager.defaultMaterial;
+		const simulationMaterial = this.editor.materialManager.resolveMaterialFromJSON(json);
 
 		if (simulationMaterial === undefined) throw new Error('SimulationMaterial not found');
 		this.simulationMaterial = simulationMaterial;
