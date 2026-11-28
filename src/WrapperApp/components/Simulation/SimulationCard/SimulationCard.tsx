@@ -20,7 +20,7 @@ export type SimulationCardProps = {
 	handleDelete?: (jobId: string) => void;
 	handleCancel?: (jobId: string) => void;
 	handleRefresh?: (jobId: string) => void;
-	showInputFiles?: (inputFiles?: SimulationInputFiles) => void;
+	showInputFiles?: (inputFiles?: SimulationInputFiles, title?: string) => void;
 } & CardProps;
 
 export default function SimulationCard({

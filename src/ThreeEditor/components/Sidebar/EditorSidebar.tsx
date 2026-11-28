@@ -2,7 +2,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import SpeedIcon from '@mui/icons-material/Speed';
 import TokenIcon from '@mui/icons-material/Token';
 import { Box, Divider, Stack, Typography } from '@mui/material';
-import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
+import { SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { Object3D } from 'three';
 
 import { StyledTab, StyledTabs } from '../../../shared/components/Tabs/StyledTabs';
@@ -33,7 +33,11 @@ export function EditorSidebar(props: EditorSidebarProps) {
 		[editor]
 	);
 
-	useSignal(editor, ['objectSelected', 'objectAdded', 'objectRemoved'], handleObjectUpdate);
+	useSignal(
+		editor,
+		['objectSelected', 'objectAdded', 'objectRemoved', 'objectChanged'],
+		handleObjectUpdate
+	);
 
 	const [selectedTab, setSelectedTab] = useState<Context>('geometry');
 
@@ -50,8 +54,10 @@ export function EditorSidebar(props: EditorSidebarProps) {
 		};
 	}, [editor, handleContextChange]);
 
-	const geometryTabElements = getGeometryTabElements(simulator, btnProps, editor);
-	const scoringTabElements = getScoringTabElements(simulator, btnProps, editor);
+	const treeSources = useMemo(() => getTreeSources(editor), [editor]);
+
+	const geometryTabElements = getGeometryTabElements(simulator, btnProps, editor, treeSources);
+	const scoringTabElements = getScoringTabElements(simulator, btnProps, editor, treeSources);
 
 	return (
 		<Box
@@ -87,10 +93,14 @@ export function EditorSidebar(props: EditorSidebarProps) {
 			</StyledTabs>
 			<div>
 				{selectedTab === 'geometry' && (
-					<EditorSidebarTabTree>{geometryTabElements}</EditorSidebarTabTree>
+					<EditorSidebarTabTree editor={editor}>
+						{geometryTabElements}
+					</EditorSidebarTabTree>
 				)}
 				{selectedTab === 'scoring' && (
-					<EditorSidebarTabTree>{scoringTabElements}</EditorSidebarTabTree>
+					<EditorSidebarTabTree editor={editor}>
+						{scoringTabElements}
+					</EditorSidebarTabTree>
 				)}
 			</div>
 			<div>
@@ -98,8 +108,11 @@ export function EditorSidebar(props: EditorSidebarProps) {
 					<>
 						{editor.selected && (
 							<Typography
-								fontSize='1rem'
-								sx={{ marginTop: '1rem', marginBottom: '.5rem' }}>
+								sx={{
+									fontSize: '1rem',
+									marginTop: '1rem',
+									marginBottom: '.5rem'
+								}}>
 								Details
 							</Typography>
 						)}
@@ -112,8 +125,10 @@ export function EditorSidebar(props: EditorSidebarProps) {
 					<Stack spacing={2}>
 						<Box>
 							<Typography
-								fontSize='1rem'
-								sx={{ marginBottom: '.5rem' }}>
+								sx={{
+									fontSize: '1rem',
+									marginBottom: '.5rem'
+								}}>
 								Beam
 							</Typography>
 							<PropertiesPanel
@@ -126,8 +141,10 @@ export function EditorSidebar(props: EditorSidebarProps) {
 						{editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
 							<Box>
 								<Typography
-									fontSize='1rem'
-									sx={{ marginBottom: '.5rem' }}>
+									sx={{
+										fontSize: '1rem',
+										marginBottom: '.5rem'
+									}}>
 									Physics
 								</Typography>
 								<PhysicConfiguration
@@ -143,32 +160,61 @@ export function EditorSidebar(props: EditorSidebarProps) {
 	);
 }
 
-function getGeometryTabElements(simulator: SimulatorType, btnProps: any, editor: YaptideEditor) {
+type TreeSources = ReturnType<typeof getTreeSources>;
+
+function getTreeSources(editor: YaptideEditor) {
+	const worldZone = [editor.zoneManager.worldZone];
+	const zones = [editor.zoneManager.zoneContainer];
+	const ctCube = [editor.specialComponentsManager.CTCubeContainer];
+	const beamModulator = [editor.specialComponentsManager.beamModulatorContainer];
+
+	return {
+		figures: [editor.figureManager.figureContainer],
+		worldZone,
+		zones,
+		allZones: [...worldZone, ...zones],
+		detectors: [editor.detectorManager.detectorContainer],
+		ctCube,
+		beamModulator,
+		specialComponents: [...ctCube, ...beamModulator],
+		filters: [editor.scoringManager.filterContainer],
+		outputs: [editor.scoringManager.outputContainer]
+	};
+}
+
+function getGeometryTabElements(
+	simulator: SimulatorType,
+	btnProps: any,
+	editor: YaptideEditor,
+	sources: TreeSources
+) {
 	const commonElements = [
 		{
 			title: 'Figures',
 			add: btnProps['Figures'],
+			sources: sources.figures,
 			tree: (
 				<SidebarTreeList
 					editor={editor}
-					sources={[editor.figureManager.figureContainer]}
+					sources={sources.figures}
 				/>
 			)
 		},
 		{
 			title: 'Zones',
 			add: btnProps['Zones'],
+			sources: sources.allZones,
 			tree: (
 				<>
 					<SidebarTreeList
 						editor={editor}
-						sources={[editor.zoneManager.worldZone]}
+						sources={sources.worldZone}
 						dragDisabled
 					/>
 					<Divider sx={{ marginBottom: t => t.spacing(1) }} />
 					<SidebarTreeList
 						editor={editor}
-						sources={[editor.zoneManager.zoneContainer]}
+						sources={sources.zones}
 					/>
 				</>
 			)
@@ -176,10 +222,11 @@ function getGeometryTabElements(simulator: SimulatorType, btnProps: any, editor:
 		{
 			title: 'Detectors',
 			add: btnProps['Detectors'],
+			sources: sources.detectors,
 			tree: (
 				<SidebarTreeList
 					editor={editor}
-					sources={[editor.detectorManager.detectorContainer]}
+					sources={sources.detectors}
 				/>
 			)
 		}
@@ -190,13 +237,14 @@ function getGeometryTabElements(simulator: SimulatorType, btnProps: any, editor:
 		{
 			title: 'Special Components',
 			add: btnProps['Special Components'],
+			sources: sources.specialComponents,
 			tree: (
 				<>
 					{editor.specialComponentsManager.CTCubeContainer.children.length > 0 ? (
 						<>
 							<SidebarTreeList
 								editor={editor}
-								sources={[editor.specialComponentsManager.CTCubeContainer]}
+								sources={sources.ctCube}
 								dragDisabled
 								sortingDisabled
 							/>
@@ -206,7 +254,7 @@ function getGeometryTabElements(simulator: SimulatorType, btnProps: any, editor:
 					) : undefined}
 					<SidebarTreeList
 						editor={editor}
-						sources={[editor.specialComponentsManager.beamModulatorContainer]}
+						sources={sources.beamModulator}
 						dragDisabled
 						sortingDisabled
 					/>
@@ -220,10 +268,11 @@ function getGeometryTabElements(simulator: SimulatorType, btnProps: any, editor:
 		{
 			title: 'Hierarchy',
 			add: btnProps['Figures'],
+			sources: sources.figures,
 			tree: (
 				<SidebarTreeList
 					editor={editor}
-					sources={[editor.figureManager.figureContainer]}
+					sources={sources.figures}
 					nestingAllowed={true}
 				/>
 			)
@@ -231,10 +280,11 @@ function getGeometryTabElements(simulator: SimulatorType, btnProps: any, editor:
 		{
 			title: 'Detectors',
 			add: btnProps['Detectors'],
+			sources: sources.detectors,
 			tree: (
 				<SidebarTreeList
 					editor={editor}
-					sources={[editor.detectorManager.detectorContainer]}
+					sources={sources.detectors}
 				/>
 			)
 		}
@@ -254,25 +304,32 @@ function getGeometryTabElements(simulator: SimulatorType, btnProps: any, editor:
 	}
 }
 
-function getScoringTabElements(simulator: SimulatorType, btnProps: any, editor: YaptideEditor) {
+function getScoringTabElements(
+	simulator: SimulatorType,
+	btnProps: any,
+	editor: YaptideEditor,
+	sources: TreeSources
+) {
 	const commonElements = [
 		{
 			title: 'Filters',
 			add: btnProps['Filters'],
+			sources: sources.filters,
 			tree: (
 				<SidebarTreeList
 					editor={editor}
-					sources={[editor.scoringManager.filterContainer]}
+					sources={sources.filters}
 				/>
 			)
 		},
 		{
 			title: 'Outputs',
 			add: btnProps['Outputs'],
+			sources: sources.outputs,
 			tree: (
 				<SidebarTreeList
 					editor={editor}
-					sources={[editor.scoringManager.outputContainer]}
+					sources={sources.outputs}
 				/>
 			)
 		}

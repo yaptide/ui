@@ -1,5 +1,9 @@
+import MenuIcon from '@mui/icons-material/Menu';
 import Box from '@mui/material/Box';
-import { styled } from '@mui/material/styles';
+import Drawer from '@mui/material/Drawer';
+import IconButton from '@mui/material/IconButton';
+import { styled, useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { SyntheticEvent, useEffect, useState } from 'react';
 
 import { useConfig } from '../config/ConfigService';
@@ -9,7 +13,6 @@ import { EditorToolbar } from '../ThreeEditor/components/Editor/EditorToolbar';
 import SceneEditor from '../ThreeEditor/components/Editor/SceneEditor';
 import { EditorSidebar } from '../ThreeEditor/components/Sidebar/EditorSidebar';
 import { SimulationFetchSource, SimulatorType } from '../types/RequestTypes';
-import { SimulationInputFiles } from '../types/ResponseTypes';
 import { FullSimulationData } from '../types/SimulationService';
 import { camelCaseToNormalText } from '../util/camelCaseToSentenceCase';
 import HeaderPanel from './components/Header/HeaderPanel';
@@ -22,22 +25,42 @@ import { ExamplePanel } from './components/Panels/ExamplePanel';
 import { TabPanel } from './components/Panels/TabPanel';
 import ResultsPanel from './components/Results/ResultsPanel';
 import { Geant4DatasetsType } from './components/Simulation/Geant4DatasetDownload';
+import { RunSimulationFunctionType } from './components/Simulation/RunSimulationForm';
 import RunSimulationPanel from './components/Simulation/RunSimulationPanel';
 import SimulationPanel from './components/Simulation/SimulationPanel';
 import { useRunGeant4LocalWorkerSimulation } from './UseRunGeant4LocalWorkerSimulation';
 import { useRunRemoteWorkerSimulation } from './UseRunRemoteWorkerSimulation';
+
+// Width of the navigation drawer (the desktop grid column and the mobile overlay share this value).
+const NAV_DRAWER_WIDTH = 200;
+// Vertical space (px) taken by the header, grid gaps and padding on mobile. Keeps the content
+// row at least a full viewport tall while the sidebar stacks in the auto-sized row below it.
+const MOBILE_CONTENT_VERTICAL_OFFSET = 180;
 
 const StyledAppGrid = styled(Box)(({ theme }) => ({
 	background: theme.palette.background.default,
 	display: 'grid',
 	width: '100%',
 	height: '100vh',
-	gridTemplateColumns:
-		'[drawer-start] 200px [drawer-end content-start] 1fr [content-end sidebar-start] 370px [sidebar-end]',
+	gridTemplateColumns: `[drawer-start] ${NAV_DRAWER_WIDTH}px [drawer-end content-start] 1fr [content-end sidebar-start] 370px [sidebar-end]`,
 	gridTemplateRows: '[header-start] 52px [header-end content-start] auto [content-end]',
 	gap: 8,
 	padding: 8,
-	boxSizing: 'border-box'
+	boxSizing: 'border-box',
+	// On mobile: drawer collapses (NavPanel is an overlay),
+	// sidebar merges into the content column and drops to a new row below it,
+	// so the container height must grow with content.
+	[theme.breakpoints.down('lg')]: {
+		gridTemplateRows:
+			'[header-start] minmax(52px, auto) [header-end content-start] 1fr [content-end]'
+	},
+	[theme.breakpoints.down('md')]: {
+		height: 'auto',
+		minHeight: '100vh',
+		gridTemplateColumns:
+			'[drawer-start drawer-end content-start sidebar-start] 1fr [content-end sidebar-end]',
+		gridTemplateRows: `[header-start] minmax(52px, auto) [header-end content-start] minmax(calc(100vh - ${MOBILE_CONTENT_VERTICAL_OFFSET}px), 1fr) [content-end sidebar-row-start] auto [sidebar-row-end]`
+	}
 }));
 
 function WrapperApp() {
@@ -48,8 +71,12 @@ function WrapperApp() {
 		FullSimulationData | undefined
 	>();
 	const { isAuthorized, logout } = useAuth();
-	const [open, setOpen] = useState(true);
 	const [tabsValue, setTabsValue] = useState('editor');
+	const theme = useTheme();
+	const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+	// Controls visibility of the mobile NavPanel overlay.
+	const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
 	const [
 		simulationPanelPresentedSimulationsSource,
@@ -61,21 +88,6 @@ function WrapperApp() {
 			auth.isAuthorized && !demoMode ? 'remote' : 'local'
 		);
 	}, [auth, demoMode]);
-
-	const [providedInputFiles, setProvidedInputFiles] = useState<SimulationInputFiles>();
-	const [highlightRunForm, setHighLightRunForm] = useState(false);
-
-	useEffect(() => {
-		if (Object.keys(providedInputFiles ?? {}).length > 0) {
-			setHighLightRunForm(true);
-			const timeout = setTimeout(() => setHighLightRunForm(false), 2500);
-
-			return () => {
-				clearTimeout(timeout);
-				setHighLightRunForm(false);
-			};
-		}
-	}, [providedInputFiles]);
 
 	const handleChange = (event: SyntheticEvent, newValue: string) => {
 		if (newValue === 'login' && isAuthorized) logout();
@@ -115,30 +127,89 @@ function WrapperApp() {
 
 	const runRemoteWorkerSimulation = useRunRemoteWorkerSimulation();
 	const runGeant4LocalWorkerSimulation = useRunGeant4LocalWorkerSimulation();
-	const runSimulation =
-		yaptideEditor?.contextManager.currentSimulator === SimulatorType.GEANT4
-			? runGeant4LocalWorkerSimulation
-			: runRemoteWorkerSimulation;
+	const runSimulation: RunSimulationFunctionType = (...args) => {
+		const [, , , , , , simulator] = args;
+
+		return (
+			simulator === SimulatorType.GEANT4
+				? runGeant4LocalWorkerSimulation
+				: runRemoteWorkerSimulation
+		)(...args);
+	};
 
 	const [geant4DatasetType, setGeant4DatasetType] = useState<Geant4DatasetsType>(
 		Geant4DatasetsType.FULL
 	);
 
+	// Closes the mobile overlay after a tab is selected.
+	const handleMobileNavChange = (event: SyntheticEvent, newValue: string) => {
+		handleChange(event, newValue);
+		setMobileNavOpen(false);
+	};
+
 	return (
 		<NavDrawerContext value={tabsValue}>
 			<StyledAppGrid>
-				<TabPanel
-					sx={{
-						gridColumn: 'drawer-start / drawer-end',
-						gridRow: 'header-start / content-end'
-					}}>
-					<NavPanel
-						handleChange={handleChange}
-						tabsValue={tabsValue}
-						open={open}
-						setOpen={setOpen}
-					/>
-				</TabPanel>
+				{/* Hamburger button: mobile-only, not tied to a specific tab, hidden while the drawer is open. */}
+				{isMobile && !mobileNavOpen && (
+					<IconButton
+						onClick={() => setMobileNavOpen(true)}
+						aria-label='open navigation menu'
+						size='large'
+						sx={{
+							'position': 'fixed',
+							'bottom': 20,
+							'left': 10,
+							'zIndex': theme.zIndex.drawer + 1,
+							'backgroundColor': 'background.paper',
+							'boxShadow': 1,
+							'borderRadius': theme.spacing(1),
+							'&:hover': {
+								backgroundColor: theme.palette.action.hover
+							}
+						}}>
+						<MenuIcon fontSize='large' />
+					</IconButton>
+				)}
+
+				{!isMobile && (
+					<TabPanel
+						sx={{
+							gridColumn: 'drawer-start / drawer-end',
+							gridRow: 'header-start / content-end'
+						}}>
+						<NavPanel
+							handleChange={handleChange}
+							tabsValue={tabsValue}
+						/>
+					</TabPanel>
+				)}
+
+				{/* Mobile NavPanel overlay, closes on backdrop click or tab selection */}
+				{isMobile && (
+					<Drawer
+						anchor='left'
+						open={mobileNavOpen}
+						onClose={() => setMobileNavOpen(false)}
+						ModalProps={{ keepMounted: true }}
+						slotProps={{
+							paper: {
+								elevation: 1,
+								sx: {
+									borderStyle: 'solid',
+									borderWidth: 1,
+									borderColor: 'divider'
+								}
+							}
+						}}>
+						<Box sx={{ width: NAV_DRAWER_WIDTH, height: '100%' }}>
+							<NavPanel
+								handleChange={handleMobileNavChange}
+								tabsValue={tabsValue}
+							/>
+						</Box>
+					</Drawer>
+				)}
 
 				{/* Login screen */}
 				<TabPanel
@@ -190,11 +261,14 @@ function WrapperApp() {
 					/>
 				</TabPanel>
 
-				{/* Editor sidebar */}
+				{/* Editor sidebar - drops below the content on mobile instead of a full-height column */}
 				<TabPanel
 					sx={{
 						gridColumn: 'sidebar-start / sidebar-end',
-						gridRow: 'header-start / content-end'
+						gridRow: {
+							xs: 'sidebar-row-start / sidebar-row-end',
+							md: 'header-start / content-end'
+						}
 					}}
 					forTabs={['editor']}>
 					{yaptideEditor && <EditorSidebar editor={yaptideEditor} />}
@@ -210,9 +284,6 @@ function WrapperApp() {
 					}}
 					forTabs={['simulations']}>
 					<SimulationPanel
-						goToRun={(inputFiles?: SimulationInputFiles) => {
-							setProvidedInputFiles(inputFiles);
-						}}
 						source={simulationPanelPresentedSimulationsSource}
 						setSource={setSimulationPanelPresentedSimulationsSource}
 					/>
@@ -220,17 +291,19 @@ function WrapperApp() {
 
 				{/* Simulations sidebar hosts a form to run the simulation and a list of running simulations */}
 				{/* It's also visible in Results screen for quick access to interrupt and rerun the simulation */}
+				{/* Drops below the content on mobile instead of a fixed 370px column */}
 				<TabPanel
 					sx={{
 						gridColumn: 'sidebar-start / sidebar-end',
-						gridRow: 'header-start / content-end'
+						gridRow: {
+							xs: 'sidebar-row-start / sidebar-row-end',
+							md: 'header-start / content-end'
+						}
 					}}
-					forTabs={['simulations', 'inputFiles', 'results']}>
+					forTabs={['simulations', 'inputFiles', 'results']}
+					persistentIfVisited>
 					<RunSimulationPanel
 						editorJson={yaptideEditor?.toSerialized()}
-						inputFiles={providedInputFiles}
-						highlight={highlightRunForm}
-						clearInputFiles={() => setProvidedInputFiles(undefined)}
 						runSimulation={runSimulation}
 						setSource={setSimulationPanelPresentedSimulationsSource}
 						geant4DatasetType={geant4DatasetType}
@@ -247,11 +320,7 @@ function WrapperApp() {
 					}}
 					forTabs={['inputFiles']}
 					persistentIfVisited>
-					<InputEditorPanel
-						goToRun={(inputFiles?: SimulationInputFiles) => {
-							setProvidedInputFiles(inputFiles);
-						}}
-					/>
+					<InputEditorPanel />
 				</TabPanel>
 				{/* end Input files screen */}
 

@@ -7,15 +7,19 @@ import {
 	Box,
 	Button,
 	Stack,
+	Tooltip,
 	Typography,
 	useTheme
 } from '@mui/material';
-import { ReactElement } from 'react';
+import { ReactElement, useCallback, useId, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { Object3D } from 'three';
 
 import StyledAccordion from '../../../../shared/components/StyledAccordion';
+import { useSignal } from '../../../../util/hooks/signals';
+import { isDescendantOf } from '../../../../util/isDescendantOf';
 import { CommandButtonProps } from '../../../../util/Ui/CommandButtonProps';
+import { YaptideEditor } from '../../../js/YaptideEditor';
 import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
 
 export interface TreeItem {
@@ -32,37 +36,103 @@ export type TreeElement = {
 	title: string;
 	add: CommandButtonProps[];
 	tree: ReactElement;
+	sources: Object3D[];
 };
 
 export interface EditorSidebarTabTreeProps {
+	editor: YaptideEditor;
 	children: TreeElement[];
 }
 
-function EditorSidebarTabTreeElement(props: TreeElement): ReactElement {
-	const theme = useTheme();
+function AddElementButton({ label, onClick, disabled, tooltip }: CommandButtonProps): ReactElement {
+	const descriptionId = useId();
+
+	const button = (
+		<Button
+			onClick={onClick}
+			disabled={disabled}
+			variant='contained'
+			size='small'
+			startIcon={<AddIcon />}
+			disableElevation
+			aria-describedby={tooltip ? descriptionId : undefined}>
+			{label}
+		</Button>
+	);
+
+	if (!tooltip) return button;
 
 	return (
-		<StyledAccordion key={props.title}>
-			<AccordionSummary expandIcon={<ExpandMoreIcon />}>
+		<Tooltip title={tooltip}>
+			<span
+				aria-label={undefined}
+				style={{ display: 'inline-flex' }}>
+				{button}
+				<span
+					id={descriptionId}
+					hidden>
+					{tooltip}
+				</span>
+			</span>
+		</Tooltip>
+	);
+}
+
+function EditorSidebarTabTreeElement(props: TreeElement & { editor: YaptideEditor }): ReactElement {
+	const { editor, sources } = props;
+	const theme = useTheme();
+
+	const containsObject = useCallback(
+		(object: Object3D | null) =>
+			sources.some(source => object === source || isDescendantOf(object, source)),
+		[sources]
+	);
+
+	const [expanded, setExpanded] = useState(() => containsObject(editor.selected));
+	const [containsSelected, setContainsSelected] = useState(() => containsObject(editor.selected));
+
+	useSignal(
+		editor,
+		'objectSelected',
+		useCallback(
+			(object: Object3D | null) => {
+				const isInside = containsObject(object);
+				setContainsSelected(isInside);
+
+				if (isInside) {
+					setExpanded(true);
+				}
+			},
+			[containsObject]
+		)
+	);
+
+	return (
+		<StyledAccordion
+			key={props.title}
+			expanded={expanded}
+			onChange={(_, isExpanded) => setExpanded(isExpanded)}>
+			<AccordionSummary
+				expandIcon={
+					<ExpandMoreIcon
+						color={containsSelected && !expanded ? 'secondary' : undefined}
+					/>
+				}>
 				<Typography>{props.title}</Typography>
 			</AccordionSummary>
 			<AccordionDetails>
 				<Stack
 					direction='row'
 					spacing={1}
-					alignItems='center'
-					sx={{ marginBottom: theme.spacing(1) }}>
+					sx={{
+						alignItems: 'center',
+						marginBottom: theme.spacing(1)
+					}}>
 					{props.add.map(add => (
-						<Button
+						<AddElementButton
 							key={add.label}
-							onClick={add.onClick}
-							disabled={add.disabled}
-							variant='contained'
-							size='small'
-							startIcon={<AddIcon />}
-							disableElevation>
-							{add.label}
-						</Button>
+							{...add}
+						/>
 					))}
 				</Stack>
 				{props.tree}
@@ -85,6 +155,7 @@ export function EditorSidebarTabTree(props: EditorSidebarTabTreeProps) {
 				{props.children.map(child => (
 					<EditorSidebarTabTreeElement
 						key={child.title}
+						editor={props.editor}
 						{...child}
 					/>
 				))}

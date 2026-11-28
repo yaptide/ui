@@ -303,10 +303,13 @@ function ViewManager(editor) {
 
 	// signals
 
-	signals.editorCleared.add(() => {
+	const resetViews = () => {
 		views.forEach(view => view.reset());
 		render();
-	});
+	};
+
+	signals.editorCleared.add(resetViews);
+	signals.viewportsReset.add(resetViews);
 
 	signals.rendererUpdated.add(() => {
 		scene.traverse(function (child) {

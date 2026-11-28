@@ -13,12 +13,14 @@ import { SimulationPropertiesType } from '../../../../types/SimulationProperties
 import { useSignal, useSmartWatchEditorState } from '../../../../util/hooks/signals';
 import { canChangeName, isRemovable } from '../../../../util/hooks/useKeyboardEditorControls';
 import { useNameEditing } from '../../../../util/hooks/useNameEditing';
+import { isDescendantOf } from '../../../../util/isDescendantOf';
 import { canBeDuplicated } from '../../../js/commands/DuplicateObjectCommand';
 import { SetValueCommand } from '../../../js/commands/SetValueCommand';
 import { YaptideEditor } from '../../../js/YaptideEditor';
 import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
 import { BoxFigure, CylinderFigure, SphereFigure } from '../../../Simulation/Figures/BasicFigures';
 import { isOutput } from '../../../Simulation/Scoring/ScoringOutput';
+import { getScoringTypeLabel } from '../../../Simulation/Scoring/scoringTypeLabels';
 import { AddQuantityAction, DeleteAction, DuplicateAction, RenameAction } from './contextActions';
 import BoxIcon from './svg/Box';
 import CylinderIcon from './svg/Cylinder';
@@ -160,11 +162,20 @@ export function SidebarTreeListItem(props: {
 		)
 	);
 
+	const typeLabel = getScoringTypeLabel(object);
+
 	let collapseOrExpandIcon = undefined;
 
 	if (hasChild) {
 		const IconComponent = isOpen ? RemoveIcon : AddIcon;
-		collapseOrExpandIcon = <IconComponent onClick={onToggle} />;
+		const hidesSelected = !isOpen && isDescendantOf(editor.selected, object);
+		collapseOrExpandIcon = (
+			<IconComponent
+				color={hidesSelected ? 'secondary' : undefined}
+				onClick={onToggle}
+				sx={{ cursor: 'pointer' }}
+			/>
+		);
 	} else if (node.parent) {
 		collapseOrExpandIcon = <Icon />;
 	}
@@ -197,11 +208,11 @@ export function SidebarTreeListItem(props: {
 				<Stack
 					direction='row'
 					onClick={() => editor.selectById(object.id)}
-					width='100%'
+					{...bindContextMenu(popupState)}
 					sx={{
+						width: '100%',
 						cursor: 'pointer'
-					}}
-					{...bindContextMenu(popupState)}>
+					}}>
 					<Typography
 						component={Box}
 						sx={{
@@ -227,6 +238,21 @@ export function SidebarTreeListItem(props: {
 						/>
 						<span style={{ display: mode === 'view' ? '' : 'none' }}>{node.text}</span>
 					</Typography>
+
+					{typeLabel && (
+						<Typography
+							variant='caption'
+							sx={{
+								marginLeft: 'auto',
+								paddingLeft: 1,
+								paddingRight: 1,
+								alignSelf: 'center',
+								whiteSpace: 'nowrap',
+								color: theme.palette.text.secondary
+							}}>
+							{typeLabel}
+						</Typography>
+					)}
 
 					{isHidable(object) && (
 						<Checkbox

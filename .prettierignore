@@ -10,7 +10,6 @@ node_modules/
 .github/
 .prettierrc
 .vscode/
-.devcontainer/
 README.md
 
 src/ThreeEditor/examples/

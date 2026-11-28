@@ -4,6 +4,12 @@ import { readFileSync } from 'fs';
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 
+const inputFileText = async (driver: WebDriver, name: string) =>
+	driver.executeScript<string>(
+		'const tile = arguments[0].cmTile ?? arguments[0].cmView; return (tile.root ?? tile.rootView).view.state.doc.toString();',
+		await driver.findElement(By.xpath(`//*[@aria-label = '${name} text field']`))
+	);
+
 describe('ShieldhitConverter', () => {
 	let driver: WebDriver;
 
@@ -104,7 +110,7 @@ describe('ShieldhitConverter', () => {
 		const loadFileDialog = await driver.wait(
 			until.elementLocated(
 				By.xpath(
-					`//div[@role = 'dialog' and @aria-labelledby = '${loadFileTitleId}' and @aria-describedby = '${loadFileContentId}']`
+					`//div[(@role = 'dialog' or @role = 'alertdialog') and @aria-labelledby = '${loadFileTitleId}' and @aria-describedby = '${loadFileContentId}']`
 				)
 			),
 			10_000
@@ -154,7 +160,10 @@ describe('ShieldhitConverter', () => {
 		//wait until the text has appeared in the first text field
 		await driver.wait(
 			until.elementTextMatches(
-				driver.findElement(By.xpath("//textarea[@aria-label = 'geo.dat text field']")),
+				await driver.wait(
+					until.elementLocated(By.xpath("//*[@aria-label = 'geo.dat text field']")),
+					15_000
+				),
 				/\S/
 			),
 			10_000
@@ -165,11 +174,7 @@ describe('ShieldhitConverter', () => {
 		// also check if expected text loaded from file is not empty
 		const regex = /[^a-zA-Z0-9.]/g;
 
-		const geoText = (
-			await driver
-				.findElement(By.xpath("//textarea[@aria-label = 'geo.dat text field']"))
-				.getText()
-		).replace(regex, '');
+		const geoText = (await inputFileText(driver, 'geo.dat')).replace(regex, '');
 
 		const expectedGeoText = readFileSync(
 			'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/geo.dat',
@@ -178,11 +183,7 @@ describe('ShieldhitConverter', () => {
 		expect(expectedGeoText).not.toBe('');
 		expect(geoText).toContain(expectedGeoText);
 
-		const matText = (
-			await driver
-				.findElement(By.xpath("//textarea[@aria-label = 'mat.dat text field']"))
-				.getText()
-		).replace(regex, '');
+		const matText = (await inputFileText(driver, 'mat.dat')).replace(regex, '');
 
 		const expectedMatText = readFileSync(
 			'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/mat.dat',
@@ -191,11 +192,7 @@ describe('ShieldhitConverter', () => {
 		expect(expectedMatText).not.toBe('');
 		expect(matText).toContain(expectedMatText);
 
-		const beamText = (
-			await driver
-				.findElement(By.xpath("//textarea[@aria-label = 'beam.dat text field']"))
-				.getText()
-		).replace(regex, '');
+		const beamText = (await inputFileText(driver, 'beam.dat')).replace(regex, '');
 
 		const expectedBeamText = readFileSync(
 			'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/beam.dat',
@@ -205,11 +202,7 @@ describe('ShieldhitConverter', () => {
 		expect(expectedBeamText).not.toBe('');
 		expect(beamText).toContain(expectedBeamText);
 
-		const detectText = (
-			await driver
-				.findElement(By.xpath("//textarea[@aria-label = 'detect.dat text field']"))
-				.getText()
-		).replace(regex, '');
+		const detectText = (await inputFileText(driver, 'detect.dat')).replace(regex, '');
 
 		const expectedDetectText = readFileSync(
 			'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/detect.dat',

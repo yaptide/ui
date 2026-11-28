@@ -1,6 +1,12 @@
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 
+const inputFileText = async (driver: WebDriver, name: string) =>
+	driver.executeScript<string>(
+		'const tile = arguments[0].cmTile ?? arguments[0].cmView; return (tile.root ?? tile.rootView).view.state.doc.toString();',
+		await driver.findElement(By.xpath(`//*[@aria-label = '${name} text field']`))
+	);
+
 describe('Geant4 Converter', () => {
 	let driver: WebDriver;
 
@@ -99,7 +105,7 @@ describe('Geant4 Converter', () => {
 		const loadFileDialog = await driver.wait(
 			until.elementLocated(
 				By.xpath(
-					`//div[@role = 'dialog' and @aria-labelledby = '${loadFileTitleId}' and @aria-describedby = '${loadFileContentId}']`
+					`//div[(@role = 'dialog' or @role = 'alertdialog') and @aria-labelledby = '${loadFileTitleId}' and @aria-describedby = '${loadFileContentId}']`
 				)
 			),
 			10_000
@@ -149,17 +155,16 @@ describe('Geant4 Converter', () => {
 		//wait until the text has appeared in the first text field
 		await driver.wait(
 			until.elementTextMatches(
-				driver.findElement(
-					By.xpath("//textarea[@aria-label = 'geometry.gdml text field']")
+				await driver.wait(
+					until.elementLocated(By.xpath("//*[@aria-label = 'geometry.gdml text field']")),
+					15_000
 				),
 				/\S/
 			)
 		);
 
 		//find the text field with config file and check if it is not empty
-		const configText = await driver
-			.findElement(By.xpath("//textarea[@aria-label = 'geometry.gdml text field']"))
-			.getText();
+		const configText = await inputFileText(driver, 'geometry.gdml');
 		expect(configText).not.toBe('');
 	}, 50_000);
 });

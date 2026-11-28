@@ -43,10 +43,14 @@ export class ObjectManagementFactory {
 		);
 	}
 
-	createAddCommand<TName extends string, TChild extends SimulationSceneChild>(
+	createAddCommand<
+		TName extends string,
+		TChild extends SimulationSceneChild,
+		TPluralName extends string = `${TName}s`
+	>(
 		name: TName,
 		element: TChild,
-		target: SimulationElementManager<TName, TChild>
+		target: SimulationElementManager<TName, TChild, NoInfer<TPluralName>>
 	) {
 		return new ActionCommand(
 			this.editor,
@@ -55,7 +59,7 @@ export class ObjectManagementFactory {
 			`add${CapitalizeString(name)}`,
 			`remove${CapitalizeString(name)}`,
 			[element] as MethodArgs<
-				SimulationElementManager<TName, TChild>,
+				SimulationElementManager<TName, TChild, TPluralName>,
 				`add${Capitalize<TName>}`
 			>
 		);

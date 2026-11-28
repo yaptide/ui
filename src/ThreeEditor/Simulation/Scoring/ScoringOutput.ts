@@ -80,7 +80,8 @@ export abstract class ScoringOutput
 		this._detector = detector?.uuid;
 		this.geometry =
 			detector?.geometry.clone().translate(...detector.position.toArray()) ?? null;
-		this.signals.objectSelected.dispatch(this);
+
+		if (this.editor.selected === this) this.signals.objectSelected.dispatch(this);
 	}
 
 	get scoringType(): SCORING_TYPE_ENUM {
