@@ -1,24 +1,51 @@
 version: 2
 updates:
-    # Maintain dependencies for GitHub Actions
     - package-ecosystem: 'github-actions'
       directory: '/'
       schedule:
           interval: 'daily'
+      cooldown:
+          default-days: 7
+      groups:
+          github-actions:
+              patterns:
+                  - '*'
 
     - package-ecosystem: 'npm'
       directory: '/'
       schedule:
           interval: 'daily'
+      cooldown:
+          semver-major-days: 14
+          semver-minor-days: 7
+          semver-patch-days: 3
       groups:
           react:
               patterns:
-                  - "react"
-                  - "react-dom"
-                  - "@types/react"
-                  - "@types/react-dom"
-          
-    - package-ecosystem: "gitsubmodule" 
-      directory: "/"
+                  - 'react'
+                  - 'react-dom'
+                  - '@types/react'
+                  - '@types/react-dom'
+          mui:
+              patterns:
+                  - '@mui/*'
+          codemirror:
+              patterns:
+                  - '@codemirror/*'
+                  - '@uiw/*'
+          dev-tools:
+              dependency-type: 'development'
+              update-types:
+                  - 'minor'
+                  - 'patch'
+              exclude-patterns:
+                  - 'prettier'
+          security:
+              applies-to: 'security-updates'
+              patterns:
+                  - '*'
+
+    - package-ecosystem: 'gitsubmodule'
+      directory: '/'
       schedule:
-          interval: "daily"
+          interval: 'daily'
