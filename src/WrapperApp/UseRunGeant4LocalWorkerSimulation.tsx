@@ -13,6 +13,7 @@ import {
 	SimulationRunType,
 	SimulationSourceType
 } from './components/Simulation/RunSimulationForm';
+import { reportScoringProblems } from './reportScoringProblems';
 
 export function useRunGeant4LocalWorkerSimulation(): RunSimulationFunctionType {
 	const { setTrackedId, setSimulationJobIdsSubmittedInSession } = useStore();
@@ -29,6 +30,12 @@ export function useRunGeant4LocalWorkerSimulation(): RunSimulationFunctionType {
 		batchOptions: BatchOptionsType,
 		geant4DatasetType: Geant4DatasetsType
 	) => {
+		if (
+			sourceType === 'editor' &&
+			reportScoringProblems(editorJson, 'Cannot start the simulation:')
+		)
+			return;
+
 		const simData = sourceType === 'editor' ? editorJson : inputFiles;
 
 		let options = undefined;
