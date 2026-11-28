@@ -1,5 +1,5 @@
 const MAX_LENGTH = 300;
-const EXCEPTION_PREFIX = /^[\w.]*(Error|Exception)\b[^:]*:\s*/;
+const VALUE_ERROR_PREFIX = /^(?:\w+\.)*ValueError:\s*/;
 
 export function converterErrorMessage(error: unknown): string | undefined {
 	const message =
@@ -13,7 +13,7 @@ export function converterErrorMessage(error: unknown): string | undefined {
 
 	if (!lastLine) return undefined;
 
-	const text = lastLine.replace(EXCEPTION_PREFIX, '');
+	const text = lastLine.replace(VALUE_ERROR_PREFIX, '');
 
 	return text.length > MAX_LENGTH ? `${text.slice(0, MAX_LENGTH)}…` : text;
 }

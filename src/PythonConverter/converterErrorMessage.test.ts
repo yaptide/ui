@@ -15,10 +15,14 @@ describe('converterErrorMessage', () => {
 		);
 	});
 
-	test('strips qualified exception names', () => {
+	test('keeps the type of other exceptions', () => {
+		expect(converterErrorMessage(new Error("KeyError: 'energyUnit'"))).toBe(
+			"KeyError: 'energyUnit'"
+		);
+
 		expect(
 			converterErrorMessage(new Error('pyodide.ffi.JsException: TypeError: x is null'))
-		).toBe('TypeError: x is null');
+		).toBe('pyodide.ffi.JsException: TypeError: x is null');
 	});
 
 	test('keeps plain messages', () => {
