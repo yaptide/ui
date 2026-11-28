@@ -70,8 +70,16 @@ const SimulationCardHelpers = ({
 	const onClickShowError = async (simulation: JobStatusData<StatusState.FAILED>) => {
 		const errorWindow = window.open();
 
-		const logfile = await getJobLogs(simulation);
-		const logfiles = Object.entries(logfile?.logfiles ?? {}).map(([key, value]) => {
+		const logfile = await getJobLogs(simulation).catch(() => undefined);
+
+		if (!logfile || Object.keys(logfile.logfiles).length === 0) {
+			errorWindow?.close();
+			enqueueSnackbar('No log files are available for this simulation', { variant: 'error' });
+
+			return;
+		}
+
+		const logfiles = Object.entries(logfile.logfiles).map(([key, value]) => {
 			return `<details><summary><h2 style="display: inline;">${key}</h2></summary><pre>${value}</pre></details>`;
 		});
 
