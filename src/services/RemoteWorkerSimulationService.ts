@@ -371,7 +371,8 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 				const response = await this.authKy
 					.get('logfiles', {
 						signal,
-						searchParams: camelToSnakeCase({ jobId })
+						searchParams: camelToSnakeCase({ jobId }),
+						retry: 0
 					})
 					.json<ResponseGetJobLogs>();
 

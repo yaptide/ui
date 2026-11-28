@@ -37,6 +37,7 @@ import { StyledTab, StyledTabs } from '../../../shared/components/Tabs/StyledTab
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { SimulationFetchSource, SimulatorNames, SimulatorType } from '../../../types/RequestTypes';
 import { SimulationInputFiles } from '../../../types/ResponseTypes';
+import { findEmptyProjectReason } from '../../../util/findEmptyProjectReason';
 import { parsePositiveInteger } from '../../../util/parsePositiveInteger';
 import {
 	checkSelection,
@@ -251,6 +252,12 @@ export function RunSimulationForm({
 			if (!selection) return detectionError ?? 'Checking files…';
 
 			if (selection.reason) return selection.reason;
+		}
+
+		if (simulationSourceType === 'editor' && editorJson) {
+			const emptyProjectReason = findEmptyProjectReason(editorJson, runSimulator);
+
+			if (emptyProjectReason) return emptyProjectReason;
 		}
 
 		if (isNaN(effectiveNTasks)) return 'Fill in the number of tasks';
