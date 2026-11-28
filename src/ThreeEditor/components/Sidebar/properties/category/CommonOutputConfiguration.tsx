@@ -126,14 +126,7 @@ export function CommonOutputConfiguration(props: { editor: YaptideEditor; object
 						<ObjectSelectPropertyField
 							label='Detector'
 							value={watchedObject.detector?.uuid ?? ''}
-							options={editor.detectorManager.getDetectorOptions(value => {
-								return (
-									!editor.scoringManager
-										.getTakenDetectors()
-										.includes(value.uuid) ||
-									value.uuid === watchedObject.detector?.uuid
-								);
-							})}
+							options={editor.detectorManager.getDetectorOptions()}
 							onChange={handleChangedDetector}
 						/>
 					)}

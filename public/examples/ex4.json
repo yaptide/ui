@@ -583,20 +583,10 @@
 						"uuid": "ec314da9-fbde-4ce6-830e-f92e4c81086e",
 						"name": "Protons",
 						"type": "Filter",
-						"rules": [
-							{
-								"uuid": "ce953950-0199-4f09-83e0-cb58679f86e5",
-								"keyword": "Z",
-								"operator": "==",
-								"value": 1
-							},
-							{
-								"uuid": "0b72aecb-bee1-463d-97f6-ba9d799fce1c",
-								"keyword": "A",
-								"operator": "==",
-								"value": 1
-							}
-						]
+						"particle": {
+							"id": 2,
+							"name": "Proton"
+						}
 					}
 				],
 				"metadata": {

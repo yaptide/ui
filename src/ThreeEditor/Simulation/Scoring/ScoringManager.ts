@@ -6,7 +6,6 @@ import { JSON_VERSION, YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
 import { SimulationElementManager } from '../Base/SimulationManager';
-import { CommonScoringOutput } from './CommonScoringOutput';
 import { CustomFilter, isCustomFilterJSON } from './CustomFilter';
 import { GeantScoringFilter, isGeantScoringFilterJSON } from './GeantScoringFilter';
 import { isParticleFilterJSON, ParticleFilter } from './ParticleFilter';
@@ -167,11 +166,8 @@ export class ScoringManager
 
 	getTakenDetectors(): string[] {
 		return this.outputs
-			.filter(obj => obj instanceof CommonScoringOutput)
-			.reduce<(string | null)[]>((acc, output) => {
-				return acc.concat(output.getTakenDetector());
-			}, [])
-			.filter(Boolean);
+			.map(output => output.getTakenDetector())
+			.filter((uuid): uuid is string => Boolean(uuid));
 	}
 
 	getOutputByQuantityUuid(uuid: string) {
