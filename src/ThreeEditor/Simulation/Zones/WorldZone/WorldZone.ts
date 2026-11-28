@@ -10,7 +10,6 @@ import {
 import { SerializableState } from '../../../js/EditorJson';
 import { YaptideEditor } from '../../../js/YaptideEditor';
 import { SimulationElement } from '../../Base/SimulationElement';
-import { WORLD_ZONE_DEFAULT_MATERIAL_ICRU } from '../../Materials/materials';
 import SimulationMaterial from '../../Materials/SimulationMaterial';
 import { WorldZoneHelper } from './WorldZoneHelper';
 
@@ -68,31 +67,12 @@ export class WorldZone extends SimulationElement implements SerializableState<Wo
 		return this._helper.getMeshByType(this.geometryType);
 	}
 
-	helperProxy!: WorldZoneHelper;
-
-	private _handleHelperUpdate: ProxyHandler<WorldZoneHelper> = {
-		apply: (target: WorldZoneHelper, thisArg: keyof WorldZoneHelper, args: any[]) => {
-			const result = Reflect.apply(target[thisArg] as Function, target, args);
-
-			switch (thisArg) {
-				case 'reset':
-				case 'updateHelper':
-				case 'calculateFromObject':
-					this.updatePosition();
-					this.signals.objectChanged.dispatch(this);
-			}
-
-			return result;
-		}
-	};
-
 	public set helper(value: WorldZoneHelper) {
 		this._helper = value;
-		this.helperProxy = new Proxy(this._helper, this._handleHelperUpdate);
 	}
 
 	public get helper(): WorldZoneHelper {
-		return this.helperProxy;
+		return this._helper;
 	}
 
 	private signals: {
@@ -132,11 +112,21 @@ export class WorldZone extends SimulationElement implements SerializableState<Wo
 
 		editor.sceneHelpers.add(this.helper);
 
+		let isDispatchingHelper = false;
 		const handleSignal = (object: Object3D) => {
+			if (isDispatchingHelper) return;
+
 			if (this.autoCalculate && !isWorldZone(object)) this.debouncedCalculate();
 			else if (object === this) {
-				this._helper.getMeshByType(this.geometryType).visible = object.visible;
-				this.signals.objectChanged.dispatch(this._helper.getMeshByType(this.geometryType));
+				const helperMesh = this._helper.getMeshByType(this.geometryType);
+				helperMesh.visible = object.visible;
+				isDispatchingHelper = true;
+
+				try {
+					this.signals.objectChanged.dispatch(helperMesh);
+				} finally {
+					isDispatchingHelper = false;
+				}
 			}
 		};
 		this.signals.objectChanged.add(handleSignal);
@@ -208,6 +198,7 @@ export class WorldZone extends SimulationElement implements SerializableState<Wo
 
 		const object = this.editor.zoneManager.zoneContainer;
 		this.helper.calculateFromObject(object);
+		this.updatePosition();
 		this.editor.signals.objectChanged.dispatch(this, 'size');
 	}
 
@@ -216,7 +207,7 @@ export class WorldZone extends SimulationElement implements SerializableState<Wo
 	}
 
 	reset(): void {
-		this.debouncedCalculate.cancel();
+		this.debouncedCalculate.cancel({ upcomingOnly: true });
 
 		this._material.color.set(_defaultColor);
 		this.name = 'World Zone';
@@ -224,6 +215,7 @@ export class WorldZone extends SimulationElement implements SerializableState<Wo
 		this._simulationMaterial.increment();
 		this.geometryType = 'BoxGeometry';
 		this.helper.reset();
+		this.updatePosition();
 	}
 
 	addHelpersToSceneHelpers(): void {
