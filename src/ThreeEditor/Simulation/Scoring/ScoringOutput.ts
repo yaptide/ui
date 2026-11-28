@@ -42,7 +42,6 @@ export abstract class ScoringOutput
 
 	protected _detector?: string;
 
-	//TODO: Issue#320
 	protected _trace: [boolean, string | null];
 
 	quantityContainer: QuantityContainer;
@@ -141,9 +140,9 @@ export abstract class ScoringOutput
 		return {
 			...super.toSerialized(),
 			quantities: this.quantityContainer.toSerialized(),
-			detectorUuid: this._detector,
+			detectorUuid: this.detector?.uuid,
 			trace: this._trace[0],
-			...(this.trace[1] && { traceFilter: this.trace[1] })
+			...(this.traceFilter && { traceFilter: this.traceFilter.uuid })
 		};
 	}
 

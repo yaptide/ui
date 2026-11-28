@@ -56,8 +56,8 @@ export class CommonScoringOutput
 	override toSerialized(): CommonScoringOutputJSON {
 		return {
 			...super.toSerialized(),
-			detectorUuid: this._detector,
-			zoneUuid: this._zone,
+			detectorUuid: this.detector?.uuid,
+			zoneUuid: this.zone?.uuid,
 			scoringType: this._scoringType
 		};
 	}

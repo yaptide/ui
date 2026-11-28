@@ -5,11 +5,13 @@ import { useSnackbar } from 'notistack';
 import { useCallback, useState } from 'react';
 import { throttle } from 'throttle-debounce';
 
+import { converterErrorMessage } from '../../../PythonConverter/converterErrorMessage';
 import { usePythonConverter } from '../../../PythonConverter/PythonConverterService';
 import { useInputFiles } from '../../../services/InputFilesContextProvider';
 import { useStore } from '../../../services/StoreService';
 import { addCustomStoppingPowerTableToEditorJSON } from '../../../ThreeEditor/Simulation/CustomStoppingPower/CustomStoppingPower';
 import { SimulatorNames, SimulatorType } from '../../../types/RequestTypes';
+import { reportScoringProblems } from '../../reportScoringProblems';
 import { DragDropFiles } from './DragDropFiles';
 import { InputFilesEditor } from './InputFilesEditor';
 import { readInputFiles, readInputFilesWarnings } from './readInputFiles';
@@ -50,6 +52,9 @@ export default function InputEditorPanel() {
 
 			if (!editorJSON) return setInProgress(false);
 
+			if (reportScoringProblems(editorJSON, 'Cannot generate input files:'))
+				return setInProgress(false);
+
 			await addCustomStoppingPowerTableToEditorJSON(editorJSON);
 
 			convertJSON(editorJSON, simulator)
@@ -66,7 +71,13 @@ export default function InputEditorPanel() {
 						enqueueSnackbar('Input files generated', { variant: 'info' });
 				})
 				.catch(e => {
-					enqueueSnackbar('Error while converting input files', { variant: 'error' });
+					const reason = converterErrorMessage(e);
+					enqueueSnackbar(
+						reason
+							? `Error while converting input files: ${reason}`
+							: 'Error while converting input files',
+						{ variant: 'error' }
+					);
 					console.error(e);
 				})
 				.finally(() => {

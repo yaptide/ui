@@ -32,13 +32,15 @@ export default class FilterConfigurationElement implements ConfigurationElement 
 	}
 
 	applySerialize(configurator: ScoringQuantityConfigurator) {
-		return this.hasFilter ? { filter: this.value } : {};
+		return this.hasFilter ? { filter: this.get()?.uuid ?? '' } : {};
 	}
 
 	applyDeserialize(
 		configurator: ScoringQuantityConfigurator,
 		json: { [key: string]: any }
 	): void {
-		this.set(json.filter ? this.editor.scoringManager.getFilterByUuid(json.filter) : null);
+		const filter = json.filter ? this.editor.scoringManager.getFilterByUuid(json.filter) : null;
+		this.value = filter?.uuid ?? null;
+		this.hasFilter = 'filter' in json;
 	}
 }
