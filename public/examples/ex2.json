@@ -437,20 +437,10 @@
 						"uuid": "8f5e7196-e911-4ee4-b5c8-8d08fe2e3c93",
 						"name": "protons",
 						"type": "Filter",
-						"rules": [
-							{
-								"uuid": "619e434e-6cb6-4733-9146-f235e5225874",
-								"keyword": "A",
-								"operator": "==",
-								"value": 1
-							},
-							{
-								"uuid": "550c10d9-4876-4bb8-bd1f-b8bf33eb069e",
-								"keyword": "Z",
-								"operator": "==",
-								"value": 1
-							}
-						]
+						"particle": {
+							"id": 2,
+							"name": "Proton"
+						}
 					},
 					{
 						"uuid": "1754e9a0-b1ae-4e2d-9894-58a105dde80e",

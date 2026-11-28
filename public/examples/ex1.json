@@ -307,20 +307,10 @@
 				"filters": [
 					{
 						"name": "Protons",
-						"rules": [
-							{
-								"keyword": "Z",
-								"operator": "==",
-								"uuid": "e5f50132-6d2a-4606-a58d-24a764d1a413",
-								"value": 1
-							},
-							{
-								"keyword": "A",
-								"operator": "==",
-								"uuid": "f25fb8bb-fdaa-49ae-9483-76bf6f8de0a6",
-								"value": 1
-							}
-						],
+						"particle": {
+							"id": 2,
+							"name": "Proton"
+						},
 						"type": "Filter",
 						"uuid": "9d0bae09-9ebe-46fe-9e59-bd7888db9442"
 					},
@@ -1303,20 +1293,10 @@
 					},
 					"filterRef": {
 						"name": "Protons",
-						"rules": [
-							{
-								"keyword": "Z",
-								"operator": "==",
-								"uuid": "e5f50132-6d2a-4606-a58d-24a764d1a413",
-								"value": 1
-							},
-							{
-								"keyword": "A",
-								"operator": "==",
-								"uuid": "f25fb8bb-fdaa-49ae-9483-76bf6f8de0a6",
-								"value": 1
-							}
-						],
+						"particle": {
+							"id": 2,
+							"name": "Proton"
+						},
 						"type": "Filter",
 						"uuid": "9d0bae09-9ebe-46fe-9e59-bd7888db9442"
 					},
@@ -15840,20 +15820,10 @@
 					},
 					"filterRef": {
 						"name": "Protons",
-						"rules": [
-							{
-								"keyword": "Z",
-								"operator": "==",
-								"uuid": "e5f50132-6d2a-4606-a58d-24a764d1a413",
-								"value": 1
-							},
-							{
-								"keyword": "A",
-								"operator": "==",
-								"uuid": "f25fb8bb-fdaa-49ae-9483-76bf6f8de0a6",
-								"value": 1
-							}
-						],
+						"particle": {
+							"id": 2,
+							"name": "Proton"
+						},
 						"type": "Filter",
 						"uuid": "9d0bae09-9ebe-46fe-9e59-bd7888db9442"
 					},
@@ -21736,20 +21706,10 @@
 					},
 					"filterRef": {
 						"name": "Protons",
-						"rules": [
-							{
-								"keyword": "Z",
-								"operator": "==",
-								"uuid": "e5f50132-6d2a-4606-a58d-24a764d1a413",
-								"value": 1
-							},
-							{
-								"keyword": "A",
-								"operator": "==",
-								"uuid": "f25fb8bb-fdaa-49ae-9483-76bf6f8de0a6",
-								"value": 1
-							}
-						],
+						"particle": {
+							"id": 2,
+							"name": "Proton"
+						},
 						"type": "Filter",
 						"uuid": "9d0bae09-9ebe-46fe-9e59-bd7888db9442"
 					},
@@ -21826,20 +21786,10 @@
 					},
 					"filterRef": {
 						"name": "Protons",
-						"rules": [
-							{
-								"keyword": "Z",
-								"operator": "==",
-								"uuid": "e5f50132-6d2a-4606-a58d-24a764d1a413",
-								"value": 1
-							},
-							{
-								"keyword": "A",
-								"operator": "==",
-								"uuid": "f25fb8bb-fdaa-49ae-9483-76bf6f8de0a6",
-								"value": 1
-							}
-						],
+						"particle": {
+							"id": 2,
+							"name": "Proton"
+						},
 						"type": "Filter",
 						"uuid": "9d0bae09-9ebe-46fe-9e59-bd7888db9442"
 					},
@@ -21868,20 +21818,10 @@
 					},
 					"filterRef": {
 						"name": "Protons",
-						"rules": [
-							{
-								"keyword": "Z",
-								"operator": "==",
-								"uuid": "e5f50132-6d2a-4606-a58d-24a764d1a413",
-								"value": 1
-							},
-							{
-								"keyword": "A",
-								"operator": "==",
-								"uuid": "f25fb8bb-fdaa-49ae-9483-76bf6f8de0a6",
-								"value": 1
-							}
-						],
+						"particle": {
+							"id": 2,
+							"name": "Proton"
+						},
 						"type": "Filter",
 						"uuid": "9d0bae09-9ebe-46fe-9e59-bd7888db9442"
 					},
@@ -21910,20 +21850,10 @@
 					},
 					"filterRef": {
 						"name": "Protons",
-						"rules": [
-							{
-								"keyword": "Z",
-								"operator": "==",
-								"uuid": "e5f50132-6d2a-4606-a58d-24a764d1a413",
-								"value": 1
-							},
-							{
-								"keyword": "A",
-								"operator": "==",
-								"uuid": "f25fb8bb-fdaa-49ae-9483-76bf6f8de0a6",
-								"value": 1
-							}
-						],
+						"particle": {
+							"id": 2,
+							"name": "Proton"
+						},
 						"type": "Filter",
 						"uuid": "9d0bae09-9ebe-46fe-9e59-bd7888db9442"
 					},
@@ -22119,20 +22049,10 @@
 					},
 					"filterRef": {
 						"name": "Protons",
-						"rules": [
-							{
-								"keyword": "Z",
-								"operator": "==",
-								"uuid": "e5f50132-6d2a-4606-a58d-24a764d1a413",
-								"value": 1
-							},
-							{
-								"keyword": "A",
-								"operator": "==",
-								"uuid": "f25fb8bb-fdaa-49ae-9483-76bf6f8de0a6",
-								"value": 1
-							}
-						],
+						"particle": {
+							"id": 2,
+							"name": "Proton"
+						},
 						"type": "Filter",
 						"uuid": "9d0bae09-9ebe-46fe-9e59-bd7888db9442"
 					},
@@ -22209,20 +22129,10 @@
 					},
 					"filterRef": {
 						"name": "Protons",
-						"rules": [
-							{
-								"keyword": "Z",
-								"operator": "==",
-								"uuid": "e5f50132-6d2a-4606-a58d-24a764d1a413",
-								"value": 1
-							},
-							{
-								"keyword": "A",
-								"operator": "==",
-								"uuid": "f25fb8bb-fdaa-49ae-9483-76bf6f8de0a6",
-								"value": 1
-							}
-						],
+						"particle": {
+							"id": 2,
+							"name": "Proton"
+						},
 						"type": "Filter",
 						"uuid": "9d0bae09-9ebe-46fe-9e59-bd7888db9442"
 					},
@@ -22251,20 +22161,10 @@
 					},
 					"filterRef": {
 						"name": "Protons",
-						"rules": [
-							{
-								"keyword": "Z",
-								"operator": "==",
-								"uuid": "e5f50132-6d2a-4606-a58d-24a764d1a413",
-								"value": 1
-							},
-							{
-								"keyword": "A",
-								"operator": "==",
-								"uuid": "f25fb8bb-fdaa-49ae-9483-76bf6f8de0a6",
-								"value": 1
-							}
-						],
+						"particle": {
+							"id": 2,
+							"name": "Proton"
+						},
 						"type": "Filter",
 						"uuid": "9d0bae09-9ebe-46fe-9e59-bd7888db9442"
 					},
@@ -22462,20 +22362,10 @@
 					},
 					"filterRef": {
 						"name": "Protons",
-						"rules": [
-							{
-								"keyword": "Z",
-								"operator": "==",
-								"uuid": "e5f50132-6d2a-4606-a58d-24a764d1a413",
-								"value": 1
-							},
-							{
-								"keyword": "A",
-								"operator": "==",
-								"uuid": "f25fb8bb-fdaa-49ae-9483-76bf6f8de0a6",
-								"value": 1
-							}
-						],
+						"particle": {
+							"id": 2,
+							"name": "Proton"
+						},
 						"type": "Filter",
 						"uuid": "9d0bae09-9ebe-46fe-9e59-bd7888db9442"
 					},
