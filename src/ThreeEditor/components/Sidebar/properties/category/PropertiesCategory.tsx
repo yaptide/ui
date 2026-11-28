@@ -14,6 +14,7 @@ export function PropertiesCategory(props: {
 	return (
 		<StyledAccordion
 			key={category}
+			defaultExpanded
 			sx={{ display: visible ? '' : 'none' }}>
 			<AccordionSummary expandIcon={<ExpandMoreIcon />}>
 				<Typography>{category}</Typography>
