@@ -164,7 +164,7 @@ test('allows a project without zones when the World Zone has a material', () => 
 	expect(reason(project({ figures: [], zones: [], materials: [water] }))).toBeUndefined();
 });
 
-test('asks for a zone before the World Zone size, because Calculate fits the World Zone to zones', () => {
+test('does not suggest Calculate for the World Zone size when there are no zones', () => {
 	const onlyFigure = project({
 		zones: [],
 		detectors: [],
@@ -178,7 +178,7 @@ test('asks for a zone before the World Zone size, because Calculate fits the Wor
 	);
 
 	expect(reason(onlyFigure, SimulatorType.FLUKA)).toBe(
-		'Set the World Zone size: enter its dimensions or use Calculate to fit it to the zones'
+		'Set the World Zone size: enter its dimensions'
 	);
 
 	expect(reason(onlyFigure, SimulatorType.GEANT4)).toBe(

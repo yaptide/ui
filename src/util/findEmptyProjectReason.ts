@@ -40,7 +40,9 @@ function findGeometryReason(editorJson: EditorJson, simulator: SimulatorType): s
 	);
 
 	if (worldZoneSize.some(([, value]) => !(Number(value) > 0)))
-		return 'Set the World Zone size: enter its dimensions or use Calculate to fit it to the zones';
+		return zones.length === 0
+			? 'Set the World Zone size: enter its dimensions'
+			: 'Set the World Zone size: enter its dimensions or use Calculate to fit it to the zones';
 
 	return undefined;
 }
